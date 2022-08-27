@@ -11,6 +11,7 @@ from moviepy.video.io.VideoFileClip  import VideoFileClip
 import PyPDF2
 import requests
 import zipfile
+import re
 
 filetype_list = {
     'picture' : ['jpg','gif','png','jpeg','bmp'],
@@ -278,7 +279,7 @@ class zip(file):
         with zipfile.ZipFile(self.path,mode = 'r') as z:
             self.names = z.namelist()
             self.fullinfo = z.infolist()
-            
+        
 
 def Get_file():
     path = ''
