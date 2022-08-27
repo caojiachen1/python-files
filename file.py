@@ -278,6 +278,7 @@ class zip(file):
         with zipfile.ZipFile(self.path,mode = 'r') as z:
             self.names = z.namelist()
             self.fullinfo = z.infolist()
+            
 
 
 def Get_file():
