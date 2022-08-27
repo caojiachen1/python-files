@@ -275,6 +275,9 @@ class html():
 class zip(file):
     def __init__(self, file_path) -> None:
         super().__init__(file_path)
+        with zipfile.ZipFile(self.path,mode = 'r') as z:
+            self.names = z.namelist()
+            self.fullinfo = z.infolist()
 
 
 def Get_file():
