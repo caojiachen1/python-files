@@ -226,12 +226,9 @@ class picture(file):
 class text(file):
     def __init__(self,file_path) -> None:
         super().__init__(file_path)
-        with open(self.path) as f:
-            f.seek(0)
-            self.text = f.read()
-            f.seek(0)
-            self.texts = f.readlines()
-            f.seek(0)
+        self.text = ''
+        self.texts = ''
+        self._updatetext()
 
     def _updatetext(self):
         with open(self.path) as f:
@@ -279,31 +276,42 @@ class zip(file):
         self.compress_type = {}
         self.original_size = {}
         self.compress_size = {}
+        self.last_modified_time = {}
+        self.compression_rate = {}
         with zipfile.ZipFile(self.path,mode = 'r') as z:
             self.names = z.namelist()
             self.fullinfo = z.infolist()
         for files in self.fullinfo:
-            f = str(files)
-            compress_type = re.search(r"compress_type=(.*?) ",f)
-            name = re.search(r"filename='(.*?)'",f)
-            name = name.group(1)
-            file_size = re.search(r'file_size=(.*?) ',f)
-            if file_size is not None:
-                file_size = int(file_size.group(1))
+            compress_type = re.search(r'compress_type=(.*?) ',str(files))
+            if compress_type is None:
+                self.compress_type[files.filename] = None
             else:
-                file_size = re.search(r'file_size=(.*?)>',f)
-                file_size = int(file_size.group(1))
-            self.original_size[name] = file_size
-            compress_size = re.search(r'compress_size=(.*?)>',f)
-            if compress_size is not None:
-                compress_size = int(compress_size.group(1))
-                self.compress_size[name] = compress_size
+                self.compress_type[files.filename] = compress_type.group(1)
+            self.last_modified_time[files.filename] = files.date_time
+            self.compress_size[files.filename] = round(files.compress_size/1024,1)
+            self.original_size[files.filename] = round(files.file_size/1024,1)
+            if files.file_size == 0:
+                self.compression_rate[files.filename] = 0
             else:
-                self.compress_size[name] = self.original_size[name]
-            if compress_type is not None:
-                self.compress_type[name] = compress_type.group(1)
-            else:
-                self.compress_type[name] = None
+                self.compression_rate[files.filename] = round(files.compress_size/files.file_size,2)
+
+    def add(self,path):
+        with zipfile.ZipFile(self.path,mode = 'a') as z:
+            z.write(path)
+
+    '''def extractall(self):
+        with zipfile.ZipFile(self.path,mode = 'r') as z:
+            try:
+                z.extractall(self.path)
+            except:
+                raise
+
+    def extract(self,name,path):
+        with zipfile.ZipFile(self.path,mode = 'r') as z:
+            try:
+                z.extract(name,path)
+            except:
+                raise'''
 
 def Get_file():
     path = ''
