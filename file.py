@@ -276,10 +276,34 @@ class html():
 class zip(file):
     def __init__(self, file_path) -> None:
         super().__init__(file_path)
+        self.compress_type = {}
+        self.original_size = {}
+        self.compress_size = {}
         with zipfile.ZipFile(self.path,mode = 'r') as z:
             self.names = z.namelist()
             self.fullinfo = z.infolist()
-        
+        for files in self.fullinfo:
+            f = str(files)
+            compress_type = re.search(r"compress_type=(.*?) ",f)
+            name = re.search(r"filename='(.*?)'",f)
+            name = name.group(1)
+            file_size = re.search(r'file_size=(.*?) ',f)
+            if file_size is not None:
+                file_size = int(file_size.group(1))
+            else:
+                file_size = re.search(r'file_size=(.*?)>',f)
+                file_size = int(file_size.group(1))
+            self.original_size[name] = file_size
+            compress_size = re.search(r'compress_size=(.*?)>',f)
+            if compress_size is not None:
+                compress_size = int(compress_size.group(1))
+                self.compress_size[name] = compress_size
+            else:
+                self.compress_size[name] = self.original_size[name]
+            if compress_type is not None:
+                self.compress_type[name] = compress_type.group(1)
+            else:
+                self.compress_type[name] = None
 
 def Get_file():
     path = ''
