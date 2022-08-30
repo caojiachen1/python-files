@@ -322,6 +322,10 @@ class zip(file):
             except:
                 raise
 
+class exe(file):
+    def __init__(self , file_path) -> None:
+        super().__init__(file_path)
+
 def Get_file():
     path = ''
     null = True
