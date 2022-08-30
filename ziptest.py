@@ -1,11 +1,16 @@
 import file
+import zipfile
 import re
+import os
 
 path = file.Get_file()
 a = file.zip(path)
-b = a.fullinfo[0]
-b = str(b)
-print(b)
-b = re.compile(b)
-result = b.findall(r"filename='(.*?)'")
-print(result)
+a.extractall()
+'''
+#a = info[0]
+print(a.compress_type)
+print(a.compress_size)
+print(a.original_size)
+print(a.last_modified_time)
+print(a.compression_rate)'''
+
