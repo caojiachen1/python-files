@@ -70,5 +70,7 @@ class wifi():
         wifi_results = [dict(t) for t in set([tuple(d.items()) for d in wifi_results])]
         return wifi_results
     
-
+class bluetooth():
+    def __init__(self) -> None:
+        pass
         
