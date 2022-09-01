@@ -1,4 +1,4 @@
-import shutil,cv2,os,ffmpeg,wave,PyPDF2,requests,zipfile,re,ctypes,sys
+import shutil,cv2,os,ffmpeg,wave,PyPDF2,requests,zipfile,re
 from moviepy.editor import *
 from tkinter import filedialog
 import tkinter.messagebox as msgbox
@@ -69,7 +69,7 @@ class file():
             if s in filetype_list[eachtype]:
                 self.type = eachtype
                 break
-        self.info = {'path':self.path , 'size':self.size , 'name':self.name , 'type':self.type}
+        self.info = {'path' : self.path , 'size' : self.size , 'name' : self.name , 'type' : self.type}
 
     def rename(self , new_name):
         dir = os.path.split(self.path)[0]
