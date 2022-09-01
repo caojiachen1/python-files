@@ -1,7 +1,7 @@
+from __future__ import print_function
 import pywifi
 from pywifi import const
 import sys,ctypes,time
-from __future__ import print_function
 
 def get_admin():
     def is_admin():
@@ -26,10 +26,7 @@ class wifi():
         self.status = constlist[wifi_status]
 
     def connect(self , ssid , password):
-        global w,wireless
-        w = pywifi.PyWiFi()
-        wireless = w.interfaces()[0]
-        wireless.disconnect()
+        self._update()
         if self.status == 'DISCONNECTED':
             wifi_file = pywifi.Profile()
             wifi_file.ssid = ssid
@@ -46,7 +43,8 @@ class wifi():
             else:
                 return False
         else:
-            print("已有wifi连接")
+            print("Already WiFi Access")
+        time.sleep(2)
         self._update()
 
     def disconnect(self):
@@ -54,6 +52,22 @@ class wifi():
             w = pywifi.PyWiFi()
             wireless = w.interfaces()[0]
             wireless.disconnect()
+            time.sleep(2)
+            self._update()
+
+    def scan(self):
+        wireless.scan()
+        time.sleep(2)
+        results = wireless.scan_results()
+        wifi_results = []
+        for profiles in results:
+            d = {}
+            d['ssid'] = profiles.ssid
+            d['key'] = profiles.key
+            if d['ssid'] != '':
+                wifi_results.append(d)
+        wifi_results = [dict(t) for t in set([tuple(d.items()) for d in wifi_results])]
+        return wifi_results
     
 
         
