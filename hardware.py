@@ -39,12 +39,13 @@ class wifi():
             wireless.connect(tep_profile)
             time.sleep(3)
             if wireless.status() == const.IFACE_CONNECTED:
+                self._update()
                 return True
             else:
+                self._update()
                 return False
         else:
             print("Already WiFi Access")
-        time.sleep(2)
         self._update()
 
     def disconnect(self):
