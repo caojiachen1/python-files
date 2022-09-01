@@ -1,18 +1,9 @@
-import shutil
+import shutil,cv2,os,ffmpeg,wave,PyPDF2,requests,zipfile,re,ctypes,sys
 from moviepy.editor import *
-import cv2
-import os
 from tkinter import filedialog
 import tkinter.messagebox as msgbox
-import ffmpeg
-import wave
 from moviepy.video.io.VideoFileClip  import VideoFileClip
 #from moviepy.video.compositing.concatenate import concatenate_videoclips
-import PyPDF2
-import requests
-import zipfile
-import re
-import ctypes,sys
 from __future__ import print_function
 
 filetype_list = {
@@ -56,15 +47,6 @@ filetype_list = {
     'flash' : ['swf' , 'flv'] , 
     'markdown' : ['md']
 }
-
-def get_admin():
-    def is_admin():
-        try:
-            return ctypes.windll.shell32.IsUserAnAdmin()
-        except:
-            return False
-    if not is_admin():
-        ctypes.windll.shell32.ShellExecuteW(None , "runas" , sys.executable , __file__ , None , 1)
 
 def splitname(path):
     global name , suffix
