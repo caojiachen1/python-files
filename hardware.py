@@ -2,6 +2,8 @@ from __future__ import print_function
 import pywifi
 from pywifi import const
 import sys,ctypes,time
+from bluetooth import *
+from bluetooth.windows import discover_devices
 
 def get_admin():
     def is_admin():
@@ -72,5 +74,27 @@ class wifi():
     
 class bluetooth():
     def __init__(self) -> None:
-        pass
+        global scanned,scanlist
+        scanned = []
+        scanlist = {}
+        self.devices_nearby = {}
+
+    def scan(self):
+        global already,results
+        a = discover_devices(lookup_names = True)
+        already = []
+        results = []
+        for (addr , name) in a:
+            if name not in already:
+                if name == '':
+                    name = 'Hidden'
+                results.append({'Device:' : name , 'Mac:' : addr})
+                already.append(name)
+                self.devices_nearby[name] = addr
+        return results
+
+    def get_mac(self , name):
+        self.scan()
+        return self.devices_nearby[name]
+
         
