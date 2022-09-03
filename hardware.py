@@ -1,9 +1,11 @@
 from __future__ import print_function
+import string
 import pywifi
 from pywifi import const
 import sys,ctypes,time
 from bluetooth import *
 from bluetooth.windows import discover_devices
+import datetime
 
 def get_admin():
     def is_admin():
@@ -78,10 +80,19 @@ class bluetooth():
         scanned = []
         scanlist = {}
         self.devices_nearby = {}
+        self.found = False
+        self.connected = False
 
     def scan(self):
-        global already,results
-        a = discover_devices(lookup_names = True)
+        global already,results,loop_time
+        loop_time = 0
+        try:
+            while (loop_time := loop_time +1) and (a := discover_devices(lookup_names = True , duration = 5)) and (loop_time <= 3):
+                if a.__len__ > 0:
+                    break
+            time.sleep(2)
+        except:
+            return None
         already = []
         results = []
         for (addr , name) in a:
@@ -91,10 +102,45 @@ class bluetooth():
                 results.append({'Device:' : name , 'Mac:' : addr})
                 already.append(name)
                 self.devices_nearby[name] = addr
+        if results == []:
+            results = None
+            self.devices_nearby = None
         return results
 
     def get_mac(self , name):
         self.scan()
-        return self.devices_nearby[name]
+        try:
+            addr = self.devices_nearby[name]
+        except:
+            return None
+        return addr
+ 
+    def find(self, target_name : string):
+        self.scan()
+        if target_name in self.devices_nearby.keys():
+            self.found = True
+        else:
+            self.found = False
+        return self.found
+ 
+    def connect(self , target_name , target_address):
+        self.find(target_name)
+        if not self.found:
+            return False
+        sock = BluetoothSocket(RFCOMM)
+        try:
+            sock.connect((target_address , 1))
+            data_dtr = ""
+            while True:
+                data = sock.recv(1024)
+                data_dtr = data_dtr + data.decode()
+                if '\n' in data.decode():
+                    print(datetime.datetime.now().strftime("%H:%M:%S")+"->" + data_dtr[:-2])
+                    data_dtr = ""
+        except Exception as e:
+            sock.close()
+            self.connected = False
+        self.connected = True
+        return self.connected
 
         
