@@ -1,11 +1,14 @@
 from __future__ import print_function
 import string
+from xmlrpc.client import Boolean
 import pywifi
 from pywifi import const
 import sys,ctypes,time
 from bluetooth import *
 from bluetooth.windows import discover_devices
 import datetime
+import asyncio
+# from winrt.windows.devices import radios
 
 def get_admin():
     def is_admin():
@@ -123,7 +126,7 @@ class bluetooth():
             self.found = False
         return self.found
  
-    def connect(self , target_name , target_address):
+    def connect(self , target_name , target_address) -> bool:
         self.find(target_name)
         if not self.found:
             return False
