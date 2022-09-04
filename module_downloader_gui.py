@@ -61,18 +61,26 @@ listbox_content.set('')
 
 y = tkinter.Scrollbar(root , width = 20)
 y.pack(side = tkinter.RIGHT , fill = tkinter.Y)
+
 x = tkinter.Scrollbar(root , width = 22 , orient = tkinter.HORIZONTAL)
 x.pack(side = tkinter.BOTTOM , fill = tkinter.X)
+
 listbox = tkinter.Listbox(root , selectmode = tkinter.SINGLE , width = 100 , height = 25 , yscrollcommand = y.set , xscrollcommand = x.set , listvariable = listbox_content)
 listbox.pack(side = tkinter.BOTTOM , ipady = 10 , fill = tkinter.Y)
+
 button = tkinter.Button(root , text = '搜索' , command = search , height = 1 , width = 4)
 button.place(relx = 0.6 , rely = 0.07)
+
 down = tkinter.Button(root , text = '下载' , command = download , height = 1 , width = 4)
 down.place(relx = 0.7 , rely = 0.07)
+
 input_module = tkinter.Entry(root , width = 30)
 input_module.place(relx = 0.25 , rely = 0.08)
+
 label = tkinter.Label(root , text = '模块名:')
 label.place(relx = 0.18 , rely = 0.08)
+
 y.config(command = listbox.yview)
 x.config(command = listbox.xview)
+
 root.mainloop()
