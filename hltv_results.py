@@ -45,7 +45,7 @@ def get():
         info_dict[event[i]] = []
 
     for i in range(num):
-        vs = '{}  {}-{}  {}'.format(teams_win[i] , scores_win[i] , scores_lose[i] , teams_lose[i])
+        vs = '{}        '.format(teams_win[i]).rjust(30) + '{}'.format(scores_win[i]).rjust(2) + '-' + '{}'.format(scores_lose[i]).ljust(2) + '        {}'.format(teams_lose[i]).ljust(30)
         info_list.append(vs)
         if vs not in info_dict[event[i]]:
             info_dict[event[i]].append(vs)
@@ -82,7 +82,7 @@ y.pack(side = tkinter.RIGHT , fill = tkinter.Y)
 x = tkinter.Scrollbar(root , width = 22 , orient = tkinter.HORIZONTAL)
 x.pack(side = tkinter.BOTTOM , fill = tkinter.X)
 
-results = tkinter.Listbox(root , selectmode = tkinter.SINGLE , width = 100 , height = 28 , yscrollcommand = y.set , xscrollcommand = x.set , listvariable = content)
+results = tkinter.Listbox(root , selectmode = tkinter.SINGLE , width = 100 , height = 28 , yscrollcommand = y.set , xscrollcommand = x.set , listvariable = content , justify = 'center')
 results.pack(side = tkinter.BOTTOM , fill = tkinter.Y)
 
 y.config(command = results.yview)
