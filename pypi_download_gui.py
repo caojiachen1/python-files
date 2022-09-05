@@ -76,7 +76,7 @@ next = tkinter.Button(root , text = '>' , command = next_page)
 next.pack(side = tkinter.RIGHT)
 
 button = tkinter.Button(root , text = '搜索' , command = search , height = 1 , width = 4)
-button.place(relx = 0.65 , rely = 0.04)
+button.place(relx = 0.67 , rely = 0.04)
 
 down = tkinter.Button(root , text = '下载' , command = None , height = 1 , width = 4)
 down.place(relx = 0.8 , rely = 0.04)
