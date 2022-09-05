@@ -58,7 +58,7 @@ def comb_select(event):
     content.set(tuple(info_dict[str(comb.get())]))
 
 root = tkinter.Tk()
-root.title('hltv比赛结果查询')
+root.title('CSGO职业比赛结果查询')
 root.geometry('800x600')
 root.resizable(False , False)
 
