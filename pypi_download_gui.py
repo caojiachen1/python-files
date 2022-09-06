@@ -96,12 +96,3 @@ show.place(relx = 0.49 , rely = 0.09)
 x.config(command = listbox.xview)
 
 root.mainloop()
-
-
-
-
-
-
-
-
-
