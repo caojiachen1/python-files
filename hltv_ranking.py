@@ -58,8 +58,14 @@ for i in range(teams.__len__()):
     team_point[teams[i]] = points[i]
     show.append(r'#{} {}'.format(str(i+1) , str(teams[i])) + '          ' + r'{}'.format(str(points[i])).rjust(3 , '0') + '                  ')
 
+def center_window(root : tkinter.Tk, width, height):
+    screenwidth = root.winfo_screenwidth()
+    screenheight = root.winfo_screenheight()
+    size = '%dx%d+%d+%d' % (width , height , (screenwidth - width)/2 , (screenheight - height)/2)
+    root.geometry(size)
+
 win = tkinter.Tk()
-win.geometry('300x300')
+center_window(win , 300 , 300)
 win.title('CSGO战队排名')
 win.resizable(False , False)
 

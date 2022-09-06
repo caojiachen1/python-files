@@ -115,10 +115,15 @@ def get_details():
 
     msgbox.showinfo('详情' , info_string)
     
+def center_window(root : tkinter.Tk, width, height):
+    screenwidth = root.winfo_screenwidth()
+    screenheight = root.winfo_screenheight()
+    size = '%dx%d+%d+%d' % (width , height , (screenwidth - width)/2 , (screenheight - height)/2)
+    root.geometry(size)
 
 root = tkinter.Tk()
 root.title('CSGO职业比赛结果查询')
-root.geometry('800x600')
+center_window(root , 800 , 600)
 root.resizable(False , False)
 
 content = tkinter.StringVar()

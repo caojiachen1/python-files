@@ -52,8 +52,14 @@ def prev_page():
     listbox_content.set(tuple(search_page(module_name , current_page)))
     show_page.set(str(current_page) + '/' + str(page_num))
 
+def center_window(root : tkinter.Tk, width, height):
+    screenwidth = root.winfo_screenwidth()
+    screenheight = root.winfo_screenheight()
+    size = '%dx%d+%d+%d' % (width , height , (screenwidth - width)/2 , (screenheight - height)/2)
+    root.geometry(size)
+
 root = tkinter.Tk()
-root.geometry('400x550')
+center_window(root , 400 , 550)
 root.title('python库查询')
 root.resizable(False , False)
 
@@ -78,7 +84,7 @@ next.pack(side = tkinter.RIGHT)
 button = tkinter.Button(root , text = '搜索' , command = search , height = 1 , width = 4)
 button.place(relx = 0.67 , rely = 0.04)
 
-down = tkinter.Button(root , text = '下载' , command = None , height = 1 , width = 4)
+down = tkinter.Button(root , text = 'pip' , command = None , height = 1 , width = 4)
 down.place(relx = 0.8 , rely = 0.04)
 
 listbox = tkinter.Listbox(root , selectmode = tkinter.SINGLE , width = 100 , height = 25 , xscrollcommand = x.set , listvariable = listbox_content)
