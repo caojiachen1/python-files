@@ -2,11 +2,18 @@ import requests
 from bs4 import BeautifulSoup as bs
 import tkinter
 import tkinter.ttk
+from pywinauto.application import Application
+from pywinauto.keyboard import *
+import psutil
+import os
+import time
 
 module_name = ''
 links = []
 page_num = 0
 current_page = 1
+current_module = ''
+command = ''
 
 def search_page(module , page):
     global searchpage , a , s , links , page_num , u
@@ -52,9 +59,28 @@ def prev_page():
     listbox_content.set(tuple(search_page(module_name , current_page)))
     show_page.set(str(current_page) + '/' + str(page_num))
 
+def get_pip_command():
+    global current_module , command , app , is_open
+    try:
+        current_module = listbox.get(listbox.curselection())
+    except:
+        return
+    s = bs(requests.get(r'https://pypi.org/project/{}/'.format(current_module)).text , 'html.parser')
+    command = s.find('span' , id = 'pip-command').string
+    for i in psutil.process_iter():
+        if i.name().lower() in ['cmd.exe' , 'openconsole.exe']:
+            os.system('taskkill /F /IM {}'.format(i.name()))
+    app = Application().start('wt.exe')
+    is_open = False
+    while not is_open:
+        for i in psutil.process_iter():
+            if i.name().lower() == 'cmd.exe':
+                is_open = True
+        time.sleep(0.1)
+    send_keys(command , with_spaces = True , with_newlines = True)
+
 def center_window(root : tkinter.Tk, width, height):
-    screenwidth = root.winfo_screenwidth()
-    screenheight = root.winfo_screenheight()
+    screenwidth , screenheight = root.winfo_screenwidth() , root.winfo_screenheight()
     size = '%dx%d+%d+%d' % (width , height , (screenwidth - width)/2 , (screenheight - height)/2)
     root.geometry(size)
 
@@ -84,14 +110,14 @@ next.pack(side = tkinter.RIGHT)
 button = tkinter.Button(root , text = '搜索' , command = search , height = 1 , width = 4)
 button.place(relx = 0.67 , rely = 0.04)
 
-down = tkinter.Button(root , text = 'pip' , command = None , height = 1 , width = 4)
+down = tkinter.Button(root , text = 'pip' , command = get_pip_command , height = 1 , width = 4)
 down.place(relx = 0.8 , rely = 0.04)
 
-listbox = tkinter.Listbox(root , selectmode = tkinter.SINGLE , width = 100 , height = 25 , xscrollcommand = x.set , listvariable = listbox_content)
+listbox = tkinter.Listbox(root , selectmode = tkinter.SINGLE , width = 100 , height = 21 , xscrollcommand = x.set , listvariable = listbox_content)
 listbox.pack(side = tkinter.BOTTOM , fill = tkinter.Y)
 
 show = tkinter.Label(root , textvariable = show_page)
-show.place(relx = 0.49 , rely = 0.09)
+show.place(relx = 0.49 , rely = 0.1)
 
 x.config(command = listbox.xview)
 
