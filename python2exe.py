@@ -1,5 +1,4 @@
 from tkinter import *
-import tkinter.messagebox as msgbox
 from tkinter import filedialog
 import os
 import shutil
