@@ -29,7 +29,7 @@ def change(value):
     global difficulty , fps , lose , plat_length
     difficulty = int(value)
     fps = 6 - difficulty
-    plat_length = 110-difficulty*10
+    plat_length = 110 - difficulty * 10
 
 def quitpygame():
     global already
