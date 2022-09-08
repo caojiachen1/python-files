@@ -4,11 +4,11 @@ import pygame.freetype
 import tkinter as tk
 import tkinter.messagebox as msgbox
 
-already , shown = False  , False
-size = width , height = 400  , 300
+already , shown = False , False
+size = width , height = 400 , 300
 speed = [1 , 1]
 GOLD = 255 , 215 , 0
-plat_length , spline_width , fps , score , difficulty , maxscore , time , screen = 100 , 10 , 5 , 0 , 1  , -1 , 0 , 0
+plat_length , spline_width , fps , score , difficulty , maxscore , time , screen = 100 , 10 , 5 , 0 , 1 , -1 , 0 , 0
 
 ball = pygame.image.load("D:\\ball.gif")
 ball = pygame.transform.scale(ball , (50 , 50))
@@ -61,22 +61,25 @@ def game():
                 score = score + difficulty
         else:
             lose = True
+
     screen.fill(0)
     screen.blit(ball , (ballrect.left , ballrect.top))
     cursorx , cursory = pygame.mouse.get_pos()
     scoreset = "你的成绩: " + str(score)
     fontrect3 = fonts.render_to(screen , (10 , 10) , scoreset , fgcolor = GOLD , size = 20)
     pygame.draw.line(screen , GOLD , (int(cursorx-plat_length/2) , height) , (int(cursorx + plat_length/2) , height) , spline_width)
+
     if lose:
         screen.fill(0)
         fontrect = fonts.render_to(screen , (int(width/2-120) , int(height/2-50)) , "你输了！" , fgcolor = GOLD , size = 50)
-        fontrect2 = fonts.render_to(screen , (int(width/2-120) , int(height/2-100))  , "成绩：" + str(score)  , fgcolor = GOLD  , size = 30)
+        fontrect2 = fonts.render_to(screen , (int(width/2-120) , int(height/2-100)) , "成绩：" + str(score) , fgcolor = GOLD , size = 30)
         if score>maxscore and not shown:
             if maxscore != -1:
-                msgbox.showinfo('新高分'  , '恭喜您获得了新的最高分！')
+                msgbox.showinfo('新高分' , '恭喜您获得了新的最高分！')
             maxscore = score
             show_max_score.set('最高分:' + str(maxscore))
             shown = True
+
     pygame.display.update()
     root.after(fps , game)
 

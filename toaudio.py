@@ -12,7 +12,7 @@ def splitname(path):
     suffix = suffix[1:]
     return name , suffix
 
-def center_window(root : Tk, width, height):
+def center_window(root : Tk , width , height):
     screenwidth , screenheight = root.winfo_screenwidth() , root.winfo_screenheight()
     size = '%dx%d+%d+%d' % (width , height , (screenwidth - width)/2 , (screenheight - height)/2)
     root.geometry(size)

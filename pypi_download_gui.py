@@ -1,19 +1,11 @@
-import requests
+import requests , tkinter , tkinter.ttk , os , psutil , time
 from bs4 import BeautifulSoup as bs
-import tkinter
-import tkinter.ttk
 from pywinauto.application import Application
 from pywinauto.keyboard import *
-import psutil
-import os
-import time
 
-module_name = ''
+module_name ,current_module , command = '' , '' , ''
+page_num , current_page = 0 , 1
 links = []
-page_num = 0
-current_page = 1
-current_module = ''
-command = ''
 
 def search_page(module , page):
     global searchpage , a , s , links , page_num , u
@@ -65,8 +57,10 @@ def get_pip_command():
         current_module = listbox.get(listbox.curselection())
     except:
         return
+
     s = bs(requests.get(r'https://pypi.org/project/{}/'.format(current_module)).text , 'html.parser')
     command = s.find('span' , id = 'pip-command').string
+
     for i in psutil.process_iter():
         if i.name().lower() in ['cmd.exe' , 'openconsole.exe']:
             os.system('taskkill /F /IM {}'.format(i.name()))
