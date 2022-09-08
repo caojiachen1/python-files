@@ -30,11 +30,9 @@ def select():
     path = filedialog.askopenfilename(initialdir = r'E:/python_files')
     if path == '':
         return
-    if not os.path.exists(r'C:\Users\caoji\Desktop\dist'):
-        os.makedirs(r'C:\Users\caoji\Desktop\dist')
     path_ = os.path.join(r'C:\Users\caoji\Desktop' , os.path.basename(path))
     shutil.copy(path , path_)
-    auto_cmd_type(r'pyinstaller -F -w {} --distpath=C:\Users\caoji\Desktop\dist'.format(path_))
+    auto_cmd_type(r'pyinstaller -F -w {} --distpath=C:\Users\caoji\Desktop'.format(path_))
     
 root = Tk()
 root.title('python打包')
