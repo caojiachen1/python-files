@@ -10,12 +10,13 @@ import time
 def auto_cmd_type(content):
     global is_open , app
     app = Application().start('wt.exe')
+    time.sleep(0.4)
     is_open = False
     while not is_open:
         for i in psutil.process_iter():
             if i.name().lower() == 'cmd.exe':
                 is_open = True
-        time.sleep(0.1)
+        time.sleep(0.2)
     send_keys(content , with_spaces = True , with_newlines = True)
 
 def center_window(root : Tk , width , height):

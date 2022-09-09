@@ -61,9 +61,6 @@ def get_pip_command():
     s = bs(requests.get(r'https://pypi.org/project/{}/'.format(current_module)).text , 'html.parser')
     command = s.find('span' , id = 'pip-command').string
 
-    for i in psutil.process_iter():
-        if i.name().lower() in ['cmd.exe' , 'openconsole.exe']:
-            os.system('taskkill /F /IM {}'.format(i.name()))
     app = Application().start('wt.exe')
     is_open = False
     while not is_open:
