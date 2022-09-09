@@ -9,9 +9,6 @@ import time
 
 def auto_cmd_type(content):
     global is_open , app
-    for i in psutil.process_iter():
-        if i.name().lower() in ['cmd.exe' , 'openconsole.exe']:
-            os.system('taskkill /F /IM {}'.format(i.name()))
     app = Application().start('wt.exe')
     is_open = False
     while not is_open:
