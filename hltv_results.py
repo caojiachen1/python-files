@@ -8,11 +8,7 @@ import tkinter.messagebox as msgbox
 def get():
     global teams_lose , teams_win , scores_lose , scores_win , event , info_list , info_dict , link_list , get_link , j
     teams_lose , teams_win , scores_lose , scores_win = [] , [] , [], []
-    event = []
-    info_list = []
-    link_list = []
-    info_dict = {}
-    get_link = {}
+    event , info_list , link_list , info_dict , get_link = [] , [] , [] , {} , {}
     url = r'https://www.hltv.org/results'
     s = bs(requests.get(url).text , 'html.parser')
     for i in s.find_all('div' , class_ = 'team'):
