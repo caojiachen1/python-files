@@ -39,7 +39,7 @@ def quitpygame():
 lose , begin = False , False
 
 def game():
-    global fontrect , fontrect2 , fontrect3 , cursorx , cursory , lose , ballrect , score , fps , maxscore , shown , show_max_score
+    global fontrect , fontrect2 , fontrect3 , cursorx , cursory , lose , ballrect , score , fps , maxscore , shown , show_max_score , screen , fonts
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             quitpygame()
