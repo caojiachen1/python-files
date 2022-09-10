@@ -1,4 +1,4 @@
-import requests , tkinter , tkinter.ttk , os , psutil , time
+import requests , tkinter , tkinter.ttk , psutil , time
 from bs4 import BeautifulSoup as bs
 from pywinauto.application import Application
 from pywinauto.keyboard import *
