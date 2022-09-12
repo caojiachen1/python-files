@@ -44,7 +44,7 @@ def search_page(module , page):
         page_num = 500
     return dict_all
 
-def search():
+def search(event):
     global module_name , current_page
     current_page = 1
     module_name = str(enter.get())
@@ -118,8 +118,9 @@ show_page.set('0/0')
 x = tkinter.Scrollbar(root , width = 22 , orient = tkinter.HORIZONTAL)
 x.pack(side = tkinter.BOTTOM , fill = tkinter.X)
 
-enter = tkinter.Entry(root , width = 20 , takefocus = True)
+enter = tkinter.Entry(root , width = 23 , takefocus = True)
 enter.place(relx = 0.1 , rely = 0.045)
+enter.bind('<Return>' , search)
 
 prev = tkinter.Button(root , text = '<' , command = prev_page)
 prev.pack(side = tkinter.LEFT)
@@ -127,14 +128,11 @@ prev.pack(side = tkinter.LEFT)
 next = tkinter.Button(root , text = '>' , command = next_page)
 next.pack(side = tkinter.RIGHT)
 
-button = tkinter.Button(root , text = '搜索' , command = search , height = 1 , width = 4)
-button.place(relx = 0.57 , rely = 0.03)
-
 detail = tkinter.Button(root , text = '介绍' , command = show_details , height = 1 , width = 4)
-detail.place(relx = 0.69 , rely = 0.03)
+detail.place(relx = 0.65 , rely = 0.03)
 
 down = tkinter.Button(root , text = 'pip' , command = get_pip_command , height = 1 , width = 4)
-down.place(relx = 0.81 , rely = 0.03)
+down.place(relx = 0.79 , rely = 0.03)
 
 listbox = tkinter.Listbox(root , selectmode = tkinter.SINGLE , width = 100 , height = 21 , xscrollcommand = x.set , listvariable = listbox_content)
 listbox.pack(side = tkinter.BOTTOM , fill = tkinter.Y)
