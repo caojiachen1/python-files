@@ -16,6 +16,7 @@ def enter(event):
     if s.group(1) != 'baidu.input/com.baidu.input.platochat.impl.activity.chat.ChatActivity':
         msgbox.showerror('错误' , '手机未打开聊天界面!')
         exit()
+    d(resourceId = "com.baidu.input:id/input_ed").click()
     send = entry.get()
     mine.set('我发的消息: {}'.format(send))
     d.send_keys(send)

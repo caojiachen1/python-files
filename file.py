@@ -4,7 +4,6 @@ from tkinter import filedialog
 import tkinter.messagebox as msgbox
 from moviepy.video.io.VideoFileClip  import VideoFileClip
 #from moviepy.video.compositing.concatenate import concatenate_videoclips
-from __future__ import print_function
 
 filetype_list = {
     'picture' : ['jpg' , 'gif' , 'png' , 'jpeg' , 'bmp'] , 
