@@ -10,6 +10,9 @@ import tkinter.messagebox as msgbox
 #聊天框回车发送消息，按下Esc键退出程序
 
 def enter(event):
+    send = entry.get()
+    if send == '':
+        return
     a = os.popen('adb shell dumpsys window | findstr mCurrentFocus')
     result = a.read()
     s = re.search(r'mCurrentFocus=Window{.* com.(.*?)}' , result , re.IGNORECASE)
@@ -17,7 +20,6 @@ def enter(event):
         msgbox.showerror('错误' , '手机未打开聊天界面!')
         exit()
     d(resourceId = "com.baidu.input:id/input_ed").click()
-    send = entry.get()
     mine.set('我发的消息: {}'.format(send))
     d.send_keys(send)
     d(resourceId = "com.baidu.input:id/send_btn").click()
@@ -43,7 +45,7 @@ except:
 root = tkinter.Tk()
 center_window(root , 260 , 200)
 root.title('叶悠悠')
-root.bind('<Escape>' , lambda event:exit())
+root.bind('<Escape>' , lambda event : exit())
 
 respond = tkinter.StringVar()
 respond.set('叶悠悠回复: 无')
