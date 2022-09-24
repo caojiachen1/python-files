@@ -15,6 +15,7 @@ except:
 
 def auto():
     global on , i , j , visited
+    d.app_stop('com.xiaomi.vipaccount')
     d.app_start('com.xiaomi.vipaccount')
     while on:
         d.swipe(540 , 1400 , 540 , 600)
@@ -32,6 +33,19 @@ def auto():
                 j += 1
         on = (i <= 3) or (j <= 3)
 
+def check_in():
+    d.app_stop('com.xiaomi.vipaccount')
+    d.app_start('com.xiaomi.vipaccount')
+    time.sleep(1)
+    d(resourceId="com.xiaomi.vipaccount:id/iv3").click()
+    time.sleep(2)
+    try:
+        d(text="立即签到").click()
+    except:
+        msgbox.showerror('错误' , '已经签到!')
+        return
+    d(text="backIcon").click()
+
 def center_window(root : tkinter.Tk , width , height):
     s_width , s_height = root.winfo_screenwidth() , root.winfo_screenheight()
     size = '%dx%d+%d+%d' % (width , height , (s_width - width) / 2 , (s_height - height) / 2)
@@ -42,6 +56,7 @@ center_window(win , 240 , 150)
 win.resizable(False , False)
 win.title('小米社区')
 
-run = tkinter.Button(win , text = '开始' , command = auto , height = 2 , width = 7).place(relx = 0.4 , rely = 0.3)
+run = tkinter.Button(win , text = '开始' , command = auto , height = 1 , width = 5).place(relx = 0.4 , rely = 0.24)
+auto_check_in = tkinter.Button(win , text = '签到' , command = check_in , height = 1 , width = 5).place(relx = 0.4 , rely = 0.55)
 
 win.mainloop()
