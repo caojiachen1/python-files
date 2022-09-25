@@ -269,10 +269,74 @@ class youshangba:
             msgbox.showerror('错误' , '失败!')
             return
 
+class poizon:
+    def __init__(self) -> None:
+        pass
+
+    def withdraw(self):
+        d.app_stop('com.shizhuang.duapp')
+        d.app_start('com.shizhuang.duapp')
+        time.sleep(5)
+        try:
+            d(resourceId="com.shizhuang.duapp:id/rbtn_mall").click()
+            time.sleep(1)
+            d.xpath('//*[@resource-id="com.shizhuang.duapp:id/viewPager"]/android.view.ViewGroup[1]/android.widget.FrameLayout[1]/androidx.recyclerview.widget.RecyclerView[1]/android.widget.FrameLayout[2]/androidx.recyclerview.widget.RecyclerView[1]/android.widget.FrameLayout[3]/android.widget.LinearLayout[1]/android.widget.ImageView[1]').click()
+            time.sleep(2)
+            d(text="今日签到").click()
+        except:
+            msgbox.showerror('错误' , '失败!')
+            return
+
+class taobao:
+    def __init__(self) -> None:
+        pass
+
+    def get_coins(self):
+        d.app_stop('com.taobao.taobao')
+        d.app_start('com.taobao.taobao')
+        time.sleep(2)
+        try:
+            d.xpath('//*[@resource-id="com.taobao.taobao:id/rv_main_container"]/android.widget.FrameLayout[1]/android.widget.FrameLayout[1]/android.support.v7.widget.RecyclerView[1]/android.widget.FrameLayout[3]/android.widget.LinearLayout[1]/android.widget.FrameLayout[4]').click()
+            time.sleep(2)
+            d.xpath('//*[@resource-id="module-container"]/android.view.View[2]/android.view.View[1]/android.view.View[3]/android.view.View[1]/android.view.View[1]').click()
+        except:
+            msgbox.showerror('错误' , '失败!')
+            return
+
+class yeyouyou:
+    def __init__(self) -> None:
+        self.respond = tkinter.StringVar()
+        self.respond.set('叶悠悠回复: 无')
+        self.mine = tkinter.StringVar()
+        self.mine.set('我发的消息: 无')
+
+    def enter(self , event):
+        send = yeyouyou_entry.get()
+        if send == '':
+            return
+        a = os.popen('adb shell dumpsys window | findstr mCurrentFocus')
+        result = a.read()
+        s = re.search(r'mCurrentFocus=Window{.* com.(.*?)}' , result , re.IGNORECASE)
+        if s.group(1) != 'baidu.input/com.baidu.input.platochat.impl.activity.chat.ChatActivity':
+            msgbox.showerror('错误' , '手机未打开聊天界面!')
+            exit()
+        d(resourceId = "com.baidu.input:id/input_ed").click()
+        self.mine.set('我发的消息: {}'.format(send))
+        d.send_keys(send)
+        d(resourceId = "com.baidu.input:id/send_btn").click()
+        d.set_fastinput_ime(False)
+        time.sleep(4)
+        respond_text = d(resourceId = "com.baidu.input:id/content")[-1].info['text']
+        self.respond.set('叶悠悠回复: {}'.format(respond_text))
+        yeyouyou_entry.delete(0 , tkinter.END)
+
+
+
+
 def center_window(root : tkinter.Tk , width , height):
     screenwidth = root.winfo_screenwidth()
     screenheight = root.winfo_screenheight()
-    size = '%dx%d+%d+%d' % (width , height , (screenwidth - width) / 2 , (screenheight - height) / 2)
+    size = '%dx%d+%d+%d' % (width , height , (screenwidth - width) / 2 - 60 , (screenheight - height) / 2 - 60)
     root.geometry(size)
 
 root = tkinter.Tk()
@@ -285,6 +349,9 @@ kuaishou_ = kuaishou()
 kuaishou_light_ = kuaishou_light()
 douyin_light_ = douyin_light()
 youshangba_ = youshangba()
+poizon_ = poizon()
+taobao_ = taobao()
+yeyouyou_ = yeyouyou()
 
 frame_xiaomi_community = tkinter.LabelFrame(root , text = '小米社区')
 frame_xiaomi_community.place(relx = 0.02 , rely = 0.02 , relheight = 0.2 , relwidth = 0.24)
@@ -296,18 +363,24 @@ frame_douyin_light = tkinter.LabelFrame(root , text = '抖音极速版')
 frame_douyin_light.place(relx = 0.53 , rely = 0.22 , relheight = 0.2 , relwidth = 0.2)
 frame_youshangba = tkinter.LabelFrame(root , text = '优赏吧')
 frame_youshangba.place(relx = 0.02 , rely = 0.22 , relheight = 0.2 , relwidth = 0.232)
+frame_poizon = tkinter.LabelFrame(root , text = '得物')
+frame_poizon.place(relx = 0.72 , rely = 0.02 , relheight = 0.2 , relwidth = 0.2)
+frame_taobao = tkinter.LabelFrame(root , text = '淘宝')
+frame_taobao.place(relx = 0.72 , rely = 0.22 , relheight = 0.2 , relwidth = 0.2)
+frame_yeyouyou = tkinter.LabelFrame(root , text = '叶悠悠')
+frame_yeyouyou.place(relx = 0.02 , rely = 0.42 , relheight = 0.5 , relwidth = 0.9)
 
-run = tkinter.Button(frame_xiaomi_community , text = '自动浏览点赞' , command = xiaomi_community_.auto , height = 1 , width = 10)
-run.place(in_ = frame_xiaomi_community , relx = 0.25 , rely = 0.1)
-auto_check_in = tkinter.Button(frame_xiaomi_community , text = '签到' , command = xiaomi_community_.check_in , height = 1 , width = 6)
-auto_check_in.place(in_ = frame_xiaomi_community , relx = 0.3 , rely = 0.5)
+xiaomi_community_run = tkinter.Button(frame_xiaomi_community , text = '自动浏览点赞' , command = xiaomi_community_.auto , height = 1 , width = 10)
+xiaomi_community_run.place(in_ = frame_xiaomi_community , relx = 0.25 , rely = 0.1)
+xiaomi_community_auto_check_in = tkinter.Button(frame_xiaomi_community , text = '签到' , command = xiaomi_community_.check_in , height = 1 , width = 6)
+xiaomi_community_auto_check_in.place(in_ = frame_xiaomi_community , relx = 0.3 , rely = 0.5)
 
-praise = tkinter.Button(frame_kuaishou , text = '自动点赞' , command = kuaishou_.auto_praise)
-praise.place(relx = 0.35 , rely = 0.2)
-comment = tkinter.Button(frame_kuaishou , text = '自动评论' , command = kuaishou_.auto_comment)
-comment.place(relx = 0.35 , rely = 0.4)
-withdraw = tkinter.Button(frame_kuaishou , text = '自动提现' , command = kuaishou_.auto_withdraw)
-withdraw.place(relx = 0.35 , rely = 0.6)
+kuaishou_praise = tkinter.Button(frame_kuaishou , text = '自动点赞' , command = kuaishou_.auto_praise)
+kuaishou_praise.place(relx = 0.35 , rely = 0.2)
+kuaishou_comment = tkinter.Button(frame_kuaishou , text = '自动评论' , command = kuaishou_.auto_comment)
+kuaishou_comment.place(relx = 0.35 , rely = 0.4)
+kuaishou_withdraw = tkinter.Button(frame_kuaishou , text = '自动提现' , command = kuaishou_.auto_withdraw)
+kuaishou_withdraw.place(relx = 0.35 , rely = 0.6)
 
 kuaishou_light_withdraw = tkinter.Button(frame_kuaishou_light , text = '提现' , command = kuaishou_light_.withdraw , height = 2 , width = 6)
 kuaishou_light_withdraw.place(relx = 0.35 , rely = 0.26)
@@ -318,9 +391,21 @@ douyin_light_withdraw.place(relx = 0.35 , rely = 0.26)
 youshangba_sign_in = tkinter.Button(frame_youshangba , text = '签到' , command = youshangba_.sign_in , height = 2 , width = 6)
 youshangba_sign_in.place(relx = 0.35 , rely = 0.26)
 
+poizon_sign_in = tkinter.Button(frame_poizon , text = '签到' , command = poizon_.withdraw , height = 2 , width = 6)
+poizon_sign_in.place(relx = 0.35 , rely = 0.26)
 
+taobao_check_in = tkinter.Button(frame_taobao , text = '签到' , command = taobao_.get_coins , height = 2 , width = 6)
+taobao_check_in.place(relx = 0.35 , rely = 0.26)
 
+yeyouyou_entry = tkinter.Entry(frame_yeyouyou , width = 80)
+yeyouyou_entry.place(relx = 0.1 , rely = 0.2)
+yeyouyou_entry.bind('<Return>' , yeyouyou_.enter)
 
+yeyouyou_respond_ = tkinter.Label(frame_yeyouyou , textvariable = yeyouyou_.respond , wraplength = 1000)
+yeyouyou_respond_.place(relx = 0.1 , rely = 0.65)
+
+yeyouyou_mine_ = tkinter.Label(frame_yeyouyou , textvariable = yeyouyou_.mine , wraplength = 1000)
+yeyouyou_mine_.place(relx = 0.1 , rely = 0.4)
 
 
 
