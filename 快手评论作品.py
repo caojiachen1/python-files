@@ -68,7 +68,6 @@ def auto_comment():
     time.sleep(1)
     d(text="知道了").click()
    
-
 def auto_praise():
     '''快手自动点赞刷金币.需要滑动到点赞按钮出现在屏幕上'''
     if current_app() != '快手金币收益页':
