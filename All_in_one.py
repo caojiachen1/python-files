@@ -1,15 +1,9 @@
+from cProfile import label
 import tkinter
 import tkinter.messagebox as msgbox
 import tkinter.ttk
 import uiautomator2 as u2
-import sys , os
-import requests
-import re
-from bs4 import BeautifulSoup as bs
-import time
-# from 快手评论作品 import *
-# from 小米社区刷成长值 import *
-# from 叶悠悠电脑版_gui import *
+import sys , os , re , time
 
 package = {
         'com.smile.gifmaker/com.yxcorp.gifshow.webview.KwaiYodaWebViewActivity' : '快手金币收益页' ,
@@ -25,6 +19,16 @@ package = {
         'com.xiayin.task/com.example.zhuoxin_task.MainActivity' : '优赏吧'
 }
 
+done = {
+    'xiaomi_community' : [False , False] , 
+    'kuaishou' : [False , False , False] , 
+    'kuaishou_light' : False , 
+    'douyin_light' : False , 
+    'youshangba' : False , 
+    'poizon' : False , 
+    'taobao' : False
+}
+
 try:
     os.system('adb devices')
     d = u2.connect()
@@ -33,7 +37,6 @@ except:
     sys.exit()
 
 def get_current_package_name():
-    '''获取当前运行程序的包名'''
     a = os.popen('adb shell dumpsys window | findstr mCurrentFocus')
     result = a.read()
     s = re.search(r'mCurrentFocus=Window{.* com.(.*?)}' , result , re.IGNORECASE)
@@ -41,7 +44,6 @@ def get_current_package_name():
     return s
 
 def current_app():
-    '''获取手机现在运行的当前程序名称,在保存的字典中进行检索,没有收录在字典中的进程页面会返回Unknown,否则返回进程页面名称'''
     s = get_current_package_name()
     if s in package.keys():
         return package[s]
@@ -56,6 +58,8 @@ class xiaomi_community:
         self.on = True
 
     def auto(self):
+        global done
+        done['xiaomi_community'][0] = True
         d.app_stop('com.xiaomi.vipaccount')
         d.app_start('com.xiaomi.vipaccount')
         while self.on:
@@ -75,6 +79,8 @@ class xiaomi_community:
             self.on = (self.i <= 3) or (self.j <= 3)
 
     def check_in(self):
+        global done
+        done['xiaomi_community'][1] = True
         d.app_stop('com.xiaomi.vipaccount')
         d.app_start('com.xiaomi.vipaccount')
         time.sleep(1)
@@ -92,7 +98,8 @@ class kuaishou:
         pass
 
     def auto_comment(self):
-        '''快手自动评论刷金币.需要滑动到评论按钮出现在屏幕上'''
+        global done
+        done['kuaishou'][1] = True
         if current_app() != '快手金币收益页':
             msgbox.showerror('错误' , '没有打开快手收益界面!')
             return
@@ -103,21 +110,21 @@ class kuaishou:
             return
         try:
             time.sleep(1)
-            d.click(0.248, 0.245)#点击左上角视频
+            d.click(0.248, 0.245)
             time.sleep(1)
-            d(resourceId="com.smile.gifmaker:id/comment_icon").click()#打开评论区
+            d(resourceId="com.smile.gifmaker:id/comment_icon").click()
             time.sleep(1)
-            d(resourceId="com.smile.gifmaker:id/editor_holder_text").click()#点击评论框
+            d(resourceId="com.smile.gifmaker:id/editor_holder_text").click()
             time.sleep(2)
-            d.xpath('//*[@resource-id="com.smile.gifmaker:id/emoji_quick_send"]/android.widget.RelativeLayout[2]/android.widget.ImageView[1]').click()#点击表情输入
+            d.xpath('//*[@resource-id="com.smile.gifmaker:id/emoji_quick_send"]/android.widget.RelativeLayout[2]/android.widget.ImageView[1]').click()
             time.sleep(1)
-            d(resourceId="com.smile.gifmaker:id/finish_button_wrapper").click()#点击发送按钮
+            d(resourceId="com.smile.gifmaker:id/finish_button_wrapper").click()
             time.sleep(1)
-            d.xpath('//*[@resource-id="com.smile.gifmaker:id/recycler_view"]/android.view.ViewGroup[2]/android.widget.RelativeLayout[1]').long_click()#长按已经发送的评论
+            d.xpath('//*[@resource-id="com.smile.gifmaker:id/recycler_view"]/android.view.ViewGroup[2]/android.widget.RelativeLayout[1]').long_click()
             time.sleep(1)
-            d(resourceId="com.smile.gifmaker:id/qlist_alert_dialog_item_text", text="删除评论").click()#删除已经发送的评论
+            d(resourceId="com.smile.gifmaker:id/qlist_alert_dialog_item_text", text="删除评论").click()
             time.sleep(1)
-            d(resourceId="com.smile.gifmaker:id/pendant_mask_bg").click()#返回
+            d(resourceId="com.smile.gifmaker:id/pendant_mask_bg").click()
             time.sleep(1)
             d(text="知道了").click()
         except:
@@ -125,7 +132,8 @@ class kuaishou:
             return
 
     def auto_praise(self):
-        '''快手自动点赞刷金币.需要滑动到点赞按钮出现在屏幕上'''
+        global done
+        done['kuaishou'][0] = True
         if current_app() != '快手金币收益页':
             msgbox.showerror('错误' , '没有打开快手收益界面!')
             return
@@ -150,8 +158,9 @@ class kuaishou:
             return
 
     def auto_withdraw(self):
-        '''快手自动提现'''
-        if self.current_app() != '快手金币收益页':
+        global done
+        done['kuaishou'][1] = True
+        if current_app() != '快手金币收益页':
             msgbox.showerror('错误' , '没有打开快手收益界面!')
             return
         try:
@@ -181,6 +190,8 @@ class kuaishou_light:
         pass
 
     def withdraw(self):
+        global done
+        done['kuaishou_light'] = True
         if current_app() != '快手极速版收益页':
             msgbox.showerror('错误' , '没有打开快手极速版收益界面!')
             return
@@ -227,6 +238,8 @@ class douyin_light:
         pass
 
     def withdraw(self):
+        global done
+        done['douyin_light'] = True
         d.app_stop('com.ss.android.ugc.aweme.lite')
         d.app_start('com.ss.android.ugc.aweme.lite')
         time.sleep(2)
@@ -258,6 +271,8 @@ class youshangba:
         pass
 
     def sign_in(self):
+        global done
+        done['youshangba'] = True
         d.app_stop('com.xiayin.task')
         d.app_start('com.xiayin.task')
         time.sleep(5)
@@ -273,7 +288,9 @@ class poizon:
     def __init__(self) -> None:
         pass
 
-    def withdraw(self):
+    def check_in(self):
+        global done
+        done['poizon'] = True
         d.app_stop('com.shizhuang.duapp')
         d.app_start('com.shizhuang.duapp')
         time.sleep(5)
@@ -292,6 +309,8 @@ class taobao:
         pass
 
     def get_coins(self):
+        global done
+        done['taobao'] = True
         d.app_stop('com.taobao.taobao')
         d.app_start('com.taobao.taobao')
         time.sleep(2)
@@ -319,7 +338,7 @@ class yeyouyou:
         s = re.search(r'mCurrentFocus=Window{.* com.(.*?)}' , result , re.IGNORECASE)
         if s.group(1) != 'baidu.input/com.baidu.input.platochat.impl.activity.chat.ChatActivity':
             msgbox.showerror('错误' , '手机未打开聊天界面!')
-            exit()
+            return
         d(resourceId = "com.baidu.input:id/input_ed").click()
         self.mine.set('我发的消息: {}'.format(send))
         d.send_keys(send)
@@ -329,9 +348,6 @@ class yeyouyou:
         respond_text = d(resourceId = "com.baidu.input:id/content")[-1].info['text']
         self.respond.set('叶悠悠回复: {}'.format(respond_text))
         yeyouyou_entry.delete(0 , tkinter.END)
-
-
-
 
 def center_window(root : tkinter.Tk , width , height):
     screenwidth = root.winfo_screenwidth()
@@ -391,7 +407,7 @@ douyin_light_withdraw.place(relx = 0.35 , rely = 0.26)
 youshangba_sign_in = tkinter.Button(frame_youshangba , text = '签到' , command = youshangba_.sign_in , height = 2 , width = 6)
 youshangba_sign_in.place(relx = 0.35 , rely = 0.26)
 
-poizon_sign_in = tkinter.Button(frame_poizon , text = '签到' , command = poizon_.withdraw , height = 2 , width = 6)
+poizon_sign_in = tkinter.Button(frame_poizon , text = '签到' , command = poizon_.check_in , height = 2 , width = 6)
 poizon_sign_in.place(relx = 0.35 , rely = 0.26)
 
 taobao_check_in = tkinter.Button(frame_taobao , text = '签到' , command = taobao_.get_coins , height = 2 , width = 6)
@@ -400,15 +416,14 @@ taobao_check_in.place(relx = 0.35 , rely = 0.26)
 yeyouyou_entry = tkinter.Entry(frame_yeyouyou , width = 80)
 yeyouyou_entry.place(relx = 0.1 , rely = 0.2)
 yeyouyou_entry.bind('<Return>' , yeyouyou_.enter)
-
 yeyouyou_respond_ = tkinter.Label(frame_yeyouyou , textvariable = yeyouyou_.respond , wraplength = 1000)
 yeyouyou_respond_.place(relx = 0.1 , rely = 0.65)
-
 yeyouyou_mine_ = tkinter.Label(frame_yeyouyou , textvariable = yeyouyou_.mine , wraplength = 1000)
 yeyouyou_mine_.place(relx = 0.1 , rely = 0.4)
 
+notice = tkinter.Label(root , text = '提醒:   拼多多和米读极速版要自己手动签到!\n快手需要自己打开收益界面!')
+notice.pack(side = tkinter.BOTTOM , pady = 15)
 
-
-
+root.bind('<Escape>' , lambda event:exit())
 
 root.mainloop()
