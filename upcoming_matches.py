@@ -34,7 +34,7 @@ def filter(filter_type , filter_name):
         return None
     return result
 
-def center_window(root : tkinter.Tk, width, height):
+def center_window(root : tkinter.Tk , width , height):
     screenwidth = root.winfo_screenwidth()
     screenheight = root.winfo_screenheight()
     size = '%dx%d+%d+%d' % (width , height , (screenwidth - width) / 2 , (screenheight - height) / 2)
