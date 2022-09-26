@@ -13,7 +13,8 @@ package = {
     'com.xiaomi.vipaccount/com.xiaomi.vipaccount.newbrowser.NormalWebActivity' : '小米社区签到页' , 
     'com.xunmeng.pinduoduo/com.xunmeng.pinduoduo.ui.activity.HomeActivity' : '拼多多主页' , 
     'com.taobao.litetao/com.taobao.ltao.maintab.MainFrameActivity' : '淘特主页' , 
-    'com.miui.home/com.miui.home.launcher.Launcher' : '手机主页'
+    'com.miui.home/com.miui.home.launcher.Launcher' : '手机主页' , 
+    'com.xiayin.task/com.example.zhuoxin_task.MainActivity' : '优赏吧'
 }#手机app包名和中文解释一一对应字典
 
 try:
