@@ -5,18 +5,18 @@ import uiautomator2 as u2
 import sys , os , time
 
 done = {
-    'xiaomi_community' : [False , False] , 
-    'kuaishou' : [False , False , False] , 
-    'kuaishou_light' : False , 
-    'douyin_light' : False , 
-    'youshangba' : False , 
-    'poizon' : False , 
-    'taobao' : False
+    'xiaomi_community' : [0 , 0] , 
+    'kuaishou' : [0 , 0 , 0] , 
+    'kuaishou_light' : 0 , 
+    'douyin_light' : 0 , 
+    'youshangba' : 0 , 
+    'poizon' : 0 , 
+    'taobao' : 0
 }
 
 try:
     os.system('adb devices')
-    d = u2.connect()
+    d = u2.connect('74b96459')
 except:
     msgbox.showerror('错误' , '手机未连接!')
     sys.exit()
@@ -31,8 +31,12 @@ class xiaomi_community:
     def auto(self):
         self.__init__()
         global done
-        d.app_stop('com.xiaomi.vipaccount')
-        d.app_start('com.xiaomi.vipaccount')
+        try:
+            d.app_stop('com.xiaomi.vipaccount')
+            d.app_start('com.xiaomi.vipaccount')
+        except:
+            msgbox.showerror('错误' , '没有安装小米社区!')
+            return
         while self.on:
             d.swipe(540 , 1400 , 540 , 600)
             if d(resourceId = "com.xiaomi.vipaccount:id/img_like" , selected = False).exists and d(resourceId = "com.xiaomi.vipaccount:id/img_like" , selected = False).info['bounds']['bottom'] <= 2000 and self.i <= 3:
@@ -48,13 +52,17 @@ class xiaomi_community:
                     d(text = "后退").click()
                     self.j += 1
             self.on = (self.i <= 3) or (self.j <= 3)
-        done['xiaomi_community'][0] = True
+        done['xiaomi_community'][0] += 1
         done_or_not_.refresh()
 
     def check_in(self):
         global done
-        d.app_stop('com.xiaomi.vipaccount')
-        d.app_start('com.xiaomi.vipaccount')
+        try:
+            d.app_stop('com.xiaomi.vipaccount')
+            d.app_start('com.xiaomi.vipaccount')
+        except:
+            msgbox.showerror('错误' , '没有安装小米社区!')
+            return
         time.sleep(1)
         d(resourceId="com.xiaomi.vipaccount:id/iv3").click()
         time.sleep(2)
@@ -64,12 +72,12 @@ class xiaomi_community:
             msgbox.showerror('错误' , '已经签到!')
             return
         d(text="backIcon").click()
-        done['xiaomi_community'][1] = True
+        done['xiaomi_community'][1] += 1
         done_or_not_.refresh()
 
 class kuaishou:
     def __init__(self) -> None:
-        pass
+        self.is_done = False
 
     def auto_praise(self):
         global done
@@ -77,11 +85,10 @@ class kuaishou:
             d(text="去点赞").click()
         except:
             msgbox.showerror('错误' , '找不到点赞按钮!')
-            done['kuaishou'][0] = False
             return
         try:
             time.sleep(1)
-            d.click(0.244, 0.258)
+            d.click(0.75, 0.25)
             time.sleep(1)
             d(resourceId="com.smile.gifmaker:id/like_icon").click()
             time.sleep(1)
@@ -93,7 +100,7 @@ class kuaishou:
         except:
             msgbox.showerror('错误' , '失败!')
             return
-        done['kuaishou'][0] = True
+        done['kuaishou'][0] += 1
         done_or_not_.refresh()
 
     def auto_comment(self):
@@ -102,11 +109,10 @@ class kuaishou:
             d(text="去评论").click()
         except:
             msgbox.showerror('错误' , '找不到评论按钮!')
-            done['kuaishou'][1] = False
             return
         try:
             time.sleep(1)
-            d.click(0.248, 0.245)
+            d.click(0.75, 0.25)
             time.sleep(1)
             d(resourceId="com.smile.gifmaker:id/comment_icon").click()
             time.sleep(1)
@@ -126,35 +132,77 @@ class kuaishou:
         except:
             msgbox.showerror('错误' , '失败!')
             return
-        done['kuaishou'][1] = True
+        done['kuaishou'][1] += 1
         done_or_not_.refresh()
 
-    def auto_withdraw(self):
+    # def auto_withdraw(self):
+    #     global done
+    #     try:
+    #         d(text="领现金").click()
+    #     except:
+    #         msgbox.showerror('错误' , '找不到提现按钮!')
+    #         return
+    #     time.sleep(1)
+    #     try:
+    #         d(text="立即提现").click()
+    #     except:
+    #         msgbox.showerror('错误' , '已经提现!')
+    #         return
+    #     try:
+    #         time.sleep(1)
+    #         d.xpath('//*[@resource-id="app"]/android.view.View[1]/android.view.View[4]').click()
+    #         time.sleep(2)
+    #         d(resourceId="com.smile.gifmaker:id/pay_left_btn").click()
+    #         time.sleep(2)
+    #         d(resourceId="com.smile.gifmaker:id/left_btn").click()
+    #     except:
+    #         msgbox.showerror('错误' , '失败!')
+    #         return
+    #     done['kuaishou'][2] += 1
+    #     done_or_not_.refresh()
+
+    def _auto_concern(self):
         global done
         try:
-            d(text="领现金").click()
+            d(text="去关注").click()
         except:
-            msgbox.showerror('错误' , '找不到提现按钮!')
-            done['kuaishou'][1] = False
+            msgbox.showerror('错误' , '找不到关注按钮!')
             return
         time.sleep(1)
         try:
-            d(text="立即提现").click()#点击立即提现按钮
-        except:
-            msgbox.showerror('错误' , '已经提现!')
-            return
-        try:
-            time.sleep(1)
-            d.xpath('//*[@resource-id="app"]/android.view.View[1]/android.view.View[4]').click()
+            d.xpath('//*[@resource-id="com.smile.gifmaker:id/recycler_view"]/android.view.ViewGroup[1]/android.widget.LinearLayout[2]/android.widget.TextView[1]').click()
             time.sleep(2)
-            d(resourceId="com.smile.gifmaker:id/pay_left_btn").click()#完成
+            d.xpath('//*[@resource-id="com.smile.gifmaker:id/recycler_view"]/android.view.ViewGroup[1]').click()
             time.sleep(2)
-            d(resourceId="com.smile.gifmaker:id/left_btn").click()#返回
+            d(resourceId="com.smile.gifmaker:id/header_follow_status_button").click()
+            time.sleep(2)
+            d(resourceId="com.smile.gifmaker:id/qlist_alert_dialog_item_text", text="取消关注").click()
+            time.sleep(2)
+            d(resourceId="com.smile.gifmaker:id/left_btn").click()
+            time.sleep(2)
+            d(resourceId="com.smile.gifmaker:id/pendant_bg").click()
+            time.sleep(2)
+            if d(text="知道了").exists:
+                d(text="知道了").click()
+            else:
+                self.is_done = False
+                return
         except:
             msgbox.showerror('错误' , '失败!')
             return
-        done['kuaishou'][1] = True
+        done['kuaishou'][2] += 1
         done_or_not_.refresh()
+        self.is_done = True
+
+    def swipe_to_button(self):
+        d.swipe(540 , 2200 , 540 , 600)
+        d.swipe(540 , 2200 , 540 , 600)
+
+    def auto_concern(self):
+        self.is_done = False
+        while not self.is_done:
+            self.swipe_to_button()
+            self._auto_concern()
 
 class kuaishou_light:
     def __init__(self) -> None:
@@ -200,7 +248,7 @@ class kuaishou_light:
         except:
             msgbox.showerror('错误' , '失败!')
             return
-        done['kuaishou_light'] = True
+        done['kuaishou_light'] += 1
         done_or_not_.refresh()
 
 class douyin_light:
@@ -209,8 +257,12 @@ class douyin_light:
 
     def withdraw(self):
         global done
-        d.app_stop('com.ss.android.ugc.aweme.lite')
-        d.app_start('com.ss.android.ugc.aweme.lite')
+        try:
+            d.app_stop('com.ss.android.ugc.aweme.lite')
+            d.app_start('com.ss.android.ugc.aweme.lite')
+        except:
+            msgbox.showerror('错误' , '没有安装抖音极速版!')
+            return
         time.sleep(2)
         try:
             d(resourceId="com.ss.android.ugc.aweme.lite:id/dzp").click()
@@ -234,7 +286,7 @@ class douyin_light:
         except:
             msgbox.showerror('错误' , '失败!')
             return
-        done['douyin_light'] = True
+        done['douyin_light'] += 1
         done_or_not_.refresh()
 
 class youshangba:
@@ -243,8 +295,12 @@ class youshangba:
 
     def sign_in(self):
         global done
-        d.app_stop('com.xiayin.task')
-        d.app_start('com.xiayin.task')
+        try:
+            d.app_stop('com.xiayin.task')
+            d.app_start('com.xiayin.task')
+        except:
+            msgbox.showerror('错误' , '没有安装优赏吧!')
+            return
         time.sleep(5)
         try:
             d.click(0.5 , 0.95)
@@ -253,7 +309,7 @@ class youshangba:
         except:
             msgbox.showerror('错误' , '失败!')
             return
-        done['youshangba'] = True
+        done['youshangba'] += 1
         done_or_not_.refresh()
 
 class poizon:
@@ -262,20 +318,27 @@ class poizon:
 
     def check_in(self):
         global done
-        
-        d.app_stop('com.shizhuang.duapp')
-        d.app_start('com.shizhuang.duapp')
+        try:
+            d.app_stop('com.shizhuang.duapp')
+            d.app_start('com.shizhuang.duapp')
+        except:
+            msgbox.showerror('错误' , '没有安装得物!')
+            return
         time.sleep(5)
         try:
             d(resourceId="com.shizhuang.duapp:id/rbtn_mall").click()
             time.sleep(1)
             d.xpath('//*[@resource-id="com.shizhuang.duapp:id/viewPager"]/android.view.ViewGroup[1]/android.widget.FrameLayout[1]/androidx.recyclerview.widget.RecyclerView[1]/android.widget.FrameLayout[2]/androidx.recyclerview.widget.RecyclerView[1]/android.widget.FrameLayout[3]/android.widget.LinearLayout[1]/android.widget.ImageView[1]').click()
             time.sleep(2)
-            d(text="今日签到").click()
+            try:
+                d(text="今日签到").click()
+            except:
+                msgbox.showerror('错误' , '已经签到!')
+                return
         except:
             msgbox.showerror('错误' , '失败!')
             return
-        done['poizon'] = True
+        done['poizon'] += 1
         done_or_not_.refresh()
 
 class taobao:
@@ -284,8 +347,12 @@ class taobao:
 
     def get_coins(self):
         global done
-        d.app_stop('com.taobao.taobao')
-        d.app_start('com.taobao.taobao')
+        try:
+            d.app_stop('com.taobao.taobao')
+            d.app_start('com.taobao.taobao')
+        except:
+            msgbox.showerror('错误' , '没有安装淘宝!')
+            return
         time.sleep(2)
         try:
             d.xpath('//*[@resource-id="com.taobao.taobao:id/rv_main_container"]/android.widget.FrameLayout[1]/android.widget.FrameLayout[1]/android.support.v7.widget.RecyclerView[1]/android.widget.FrameLayout[3]/android.widget.LinearLayout[1]/android.widget.FrameLayout[4]').click()
@@ -294,7 +361,7 @@ class taobao:
         except:
             msgbox.showerror('错误' , '失败!')
             return
-        done['taobao'] = True
+        done['taobao'] += 1
         done_or_not_.refresh()
 
 class yeyouyou:
@@ -329,52 +396,52 @@ class yeyouyou:
 class done_or_not:
     def __init__(self) -> None:
         self.xiaomi_community_run = tkinter.StringVar()
-        self.xiaomi_community_run.set(str(int(done['xiaomi_community'][0])))
+        self.xiaomi_community_run.set(str(done['xiaomi_community'][0]))
         self.xiaomi_community_run_is_done = tkinter.Label(frame_xiaomi_community , textvariable = self.xiaomi_community_run)
         self.xiaomi_community_run_is_done.place(relx = 0.7 , rely = 0.15)
         
         self.xiaomi_community_auto_check_in = tkinter.StringVar()
-        self.xiaomi_community_auto_check_in.set(str(int(done['xiaomi_community'][1])))
+        self.xiaomi_community_auto_check_in.set(str(done['xiaomi_community'][1]))
         self.xiaomi_community_auto_check_in_is_done = tkinter.Label(frame_xiaomi_community , textvariable = self.xiaomi_community_auto_check_in)
         self.xiaomi_community_auto_check_in_is_done.place(relx = 0.6 , rely = 0.55)
 
         self.kuaishou_praise = tkinter.StringVar()
-        self.kuaishou_praise.set(str(int(done['kuaishou'][0])))
+        self.kuaishou_praise.set(str(done['kuaishou'][0]))
         self.kuaishou_praise_is_done = tkinter.Label(frame_kuaishou , textvariable = self.kuaishou_praise)
         self.kuaishou_praise_is_done.place(relx = 0.62 , rely = 0.22)
 
         self.kuaishou_comment = tkinter.StringVar()
-        self.kuaishou_comment.set(str(int(done['kuaishou'][1])))
+        self.kuaishou_comment.set(str(done['kuaishou'][1]))
         self.kuaishou_comment_is_done = tkinter.Label(frame_kuaishou , textvariable = self.kuaishou_comment)
         self.kuaishou_comment_is_done.place(relx = 0.62 , rely = 0.42)
 
         self.kuaishou_withdraw = tkinter.StringVar()
-        self.kuaishou_withdraw.set(str(int(done['kuaishou'][2])))
+        self.kuaishou_withdraw.set(str(done['kuaishou'][2]))
         self.kuaishou_withdraw_is_done = tkinter.Label(frame_kuaishou , textvariable = self.kuaishou_withdraw)
         self.kuaishou_withdraw_is_done.place(relx = 0.62 , rely = 0.62)
 
         self.youshangba_sign_in = tkinter.StringVar()
-        self.youshangba_sign_in.set(str(int(done['youshangba'])))
+        self.youshangba_sign_in.set(str(done['youshangba']))
         self.youshangba_sign_in_is_done = tkinter.Label(frame_youshangba , textvariable = self.youshangba_sign_in)
         self.youshangba_sign_in_is_done.place(relx = 0.65 , rely = 0.35)
 
         self.kuaishou_light = tkinter.StringVar()
-        self.kuaishou_light.set(str(int(done['kuaishou_light'])))
+        self.kuaishou_light.set(str(done['kuaishou_light']))
         self.kuaishou_light_is_done = tkinter.Label(frame_kuaishou_light , textvariable = self.kuaishou_light)
         self.kuaishou_light_is_done.place(relx = 0.7 , rely = 0.35)
 
         self.douyin_light = tkinter.StringVar()
-        self.douyin_light.set(str(int(done['douyin_light'])))
+        self.douyin_light.set(str(done['douyin_light']))
         self.douyin_light_is_done = tkinter.Label(frame_douyin_light , textvariable = self.douyin_light)
         self.douyin_light_is_done.place(relx = 0.7 , rely = 0.35)
 
         self.poizon = tkinter.StringVar()
-        self.poizon.set(str(int(done['poizon'])))
+        self.poizon.set(str(done['poizon']))
         self.poizon_is_done = tkinter.Label(frame_poizon , textvariable = self.poizon)
         self.poizon_is_done.place(relx = 0.7 , rely = 0.35)
 
         self.taobao = tkinter.StringVar()
-        self.taobao.set(str(int(done['taobao'])))
+        self.taobao.set(str(done['taobao']))
         self.taobao_is_done = tkinter.Label(frame_taobao , textvariable = self.taobao)
         self.taobao_is_done.place(relx = 0.7 , rely = 0.35)
 
@@ -437,7 +504,7 @@ kuaishou_praise = tkinter.Button(frame_kuaishou , text = '自动点赞' , comman
 kuaishou_praise.place(relx = 0.35 , rely = 0.2)
 kuaishou_comment = tkinter.Button(frame_kuaishou , text = '自动评论' , command = kuaishou_.auto_comment)
 kuaishou_comment.place(relx = 0.35 , rely = 0.4)
-kuaishou_withdraw = tkinter.Button(frame_kuaishou , text = '自动提现' , command = kuaishou_.auto_withdraw)
+kuaishou_withdraw = tkinter.Button(frame_kuaishou , text = '自动关注' , command = kuaishou_.auto_concern)
 kuaishou_withdraw.place(relx = 0.35 , rely = 0.6)
 
 kuaishou_light_withdraw = tkinter.Button(frame_kuaishou_light , text = '提现' , command = kuaishou_light_.withdraw , height = 2 , width = 6)
