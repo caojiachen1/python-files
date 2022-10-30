@@ -16,31 +16,31 @@ def get():
         if status == ['team']:
             r = re.search(r'<div class="team">(.*?)</div>' , str(i) , re.IGNORECASE)
             if r is not None:
-                teams_lose.append(str(r.group(1)))
+                teams_lose.append(str(r[1]))
         elif status == ['team' , 'team-won']:
             r = re.search(r'<div class="team team-won">(.*?)</div>' , str(i) , re.IGNORECASE)
             if r is not None:
-                teams_win.append(str(r.group(1)))
+                teams_win.append(str(r[1]))
 
     for i in s.find_all('span' , class_ = 'event-name'):
         r = re.search(r'<span class="event-name">(.*?)</span>' , str(i) , re.IGNORECASE)
         if r is not None:
-            event.append(str(r.group(1)))
+            event.append(str(r[1]))
 
     for i in s.find_all('span' , class_ = 'score-lost'):
         r = re.search(r'<span class="score-lost">(.*?)</span>' , str(i) , re.IGNORECASE)
         if r is not None:
-            scores_lose.append(str(r.group(1)))
+            scores_lose.append(str(r[1]))
 
     for i in s.find_all('span' , class_ = 'score-won'):
         r = re.search(r'<span class="score-won">(.*?)</span>' , str(i) , re.IGNORECASE)
         if r is not None:
-            scores_win.append(str(r.group(1)))
+            scores_win.append(str(r[1]))
 
     for i in s.find_all('a'):
         j = str(i.get('href'))
-        if i.get('class') == ['a-reset'] and j[:8] == '/matches' and (j not in link_list):
-            link_list.append('https://www.hltv.org' + j)
+        if i.get('class') == ['a-reset'] and j.startswith('/matches') and j not in link_list:
+            link_list.append(f'https://www.hltv.org{j}')
 
     num = teams_lose.__len__()
     info_dict['All'] = []
@@ -48,7 +48,8 @@ def get():
         info_dict[event[i]] = []
 
     for i in range(num):
-        vs = '{}        '.format(teams_win[i]).rjust(30) + '{}'.format(scores_win[i]).rjust(2) + '-' + '{}'.format(scores_lose[i]).ljust(2) + '        {}'.format(teams_lose[i]).ljust(30)
+        vs = f'{teams_win[i]}        '.rjust(30) + f'{scores_win[i]}'.rjust(2) + '-' + f'{scores_lose[i]}'.ljust(2) + f'        {teams_lose[i]}'.ljust(30)
+
         info_list.append(vs)
         if vs not in info_dict[event[i]]:
             info_dict[event[i]].append(vs)
@@ -58,37 +59,28 @@ def get():
 
     content.set(tuple(info_dict['All']))
 
-def comb_select(event):
-    content.set(tuple(info_dict[str(comb.get())]))
-
 def get_details():
-    global url , n , a , s , map , r , team1_score , team2_score , scores , team1 , team2 , teams , content_ , info_string
+    global n , s , map , r , team1_score , team2_score , scores , team1 , team2 , teams , info_string
 
     map , team1_score , team2_score , scores , teams = [] , [] , [] , [] , []
-    team1 , team2 = '' , ''
-    info_string = ''
+    team1 , team2 , info_string = '' , '' , ''
 
     try:
         n = results.get(results.curselection())
-    except:
+    except Exception:
         return
-    
-    url = get_link[str(n)]
-    a = requests.get(url)
-    s = bs(a.text , 'html.parser')
+
+    s = bs(requests.get(get_link[str(n)]).text , 'html.parser')
 
     for i in s.find_all('div' , class_ = 'mapname'):
-        i = str(i)
-        r = re.search(r'<div class="mapname">(.*?)</div>' , i , re.IGNORECASE)
+        r = re.search(r'<div class="mapname">(.*?)</div>' , str(i) , re.IGNORECASE)
         if r is not None:
-            map.append(str(r.group(1)))
+            map.append(str(r[1]))
     for i in s.find_all('div' , class_ = 'results-team-score'):
-        i = str(i)
-        r = re.search(r'<div class="results-team-score">(.*?)</div>' , i , re.IGNORECASE)
+        r = re.search(r'<div class="results-team-score">(.*?)</div>' , str(i) , re.IGNORECASE)
         if r is not None:
-            r = str(r.group(1))
-            scores.append(r)
-        
+            scores.append(str(r[1]))
+
     for i in range(scores.__len__()):
         if (i % 2) ==0:
             team1_score.append(scores[i])
@@ -96,25 +88,23 @@ def get_details():
             team2_score.append(scores[i])
 
     for i in s.find_all('div' , class_ = 'teamName'):
-        i = str(i)
-        r = re.search(r'<div class="teamName">(.*?)</div>' , i , re.IGNORECASE)
+        r = re.search(r'<div class="teamName">(.*?)</div>' , str(i) , re.IGNORECASE)
         if r is not None:
-            teams.append(str(r.group(1)))
-    
+            teams.append(str(r[1]))
+
     team1 , team2 = teams[0] , teams[1]
 
-    scores = []
-    for i in range(team1_score.__len__()):
-        scores.append('Map{}:{}\n'.format(i + 1 , map[i]) + team1.ljust(25) + team1_score[i].ljust(2) + '-' + team2_score[i].rjust(2) + team2.rjust(25))
+    scores = [f'Map{i + 1}:{map[i]}\n{team1.ljust(25)}{team1_score[i].ljust(2)}-{team2_score[i].rjust(2)}{team2.rjust(25)}' for i in range(team1_score.__len__())]
+
     for i in scores:
         info_string = info_string + i + '\n'
 
     msgbox.showinfo('详情' , info_string)
     
-def center_window(root : tkinter.Tk, width, height):
+def center_window(root : tkinter.Tk , width , height):
     screenwidth = root.winfo_screenwidth()
     screenheight = root.winfo_screenheight()
-    size = '%dx%d+%d+%d' % (width , height , (screenwidth - width)/2 , (screenheight - height)/2)
+    size = '%dx%d+%d+%d' % (width , height , (screenwidth - width) / 2 , (screenheight - height) / 2)
     root.geometry(size)
 
 root = tkinter.Tk()
@@ -131,7 +121,7 @@ comb = tkinter.ttk.Combobox(root , width = 55)
 comb['value'] = tuple(info_dict.keys())
 comb.current(0)
 comb.place(relx = 0.15 , rely = 0.04)
-comb.bind('<<ComboboxSelected>>' , comb_select)
+comb.bind('<<ComboboxSelected>>' , lambda event : content.set(tuple(info_dict[str(comb.get())])))
 
 refresh = tkinter.Button(root , text = '刷新' , command = get , width = 5)
 refresh.place(relx = 0.7 , rely = 0.035)

@@ -12,11 +12,15 @@ try:
 except:
     error_wire = True
 
+if not error_wire:
+    d.push(path , '/sdcard/')
+    sys.exit()
+
 try:
     d = u.connect('192.168.31.15:6666')
     error_wireless = False
 except:
     error_wireless = True
 
-if not error_wireless and not error_wire:
+if not error_wireless:
     d.push(path , '/sdcard/')
