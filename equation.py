@@ -57,22 +57,30 @@ if a == 0:
     match b:
         case 1:
             show_result = 'x = {}'.format(-c)
+            print(show_result)
             end()
         case 0:
             show_result = 'All x' if c == 0 else 'No solution'
+            print(show_result)
             end()
         case -1:
             show_result = 'x = {}'.format(c)
+            print(show_result)
             end()
     if c == 0:
         show_equation = ''
         show_result = 'x = 0'
+        print(show_result)
     elif c < 0:
         show_equation = '{}x - {} = 0'.format(b , -c)
         show_result = 'x = {}/{}'.format(-c , b) if b > 0 else 'x = -{}/{}'.format(-c , -b)
+        print(show_equation)
+        print(show_result)
     elif c > 0:
         show_equation = '{}x + {} = 0'.format(b , c)
         show_result = 'x = {}/{}'.format(-c , b) if b > 0 else 'x = -{}/{}'.format(c , -b)
+        print(show_equation)
+        print(show_result)
     end()
 
 common_factor = find_common_factor_3numbers(a , b , c)
@@ -298,27 +306,28 @@ else:
         g , h = a0 // de , b0 // de
         if abs(a0 - b0) <= eps:
             show_result = f'x1 = x2 = {g}'
+            print(show_result)
             end()
         if a0 == 0:
-            show_result = 'x1 = 0'
+            show_result = 'x1 = 0\n'
         elif a0 % de == 0:
-            show_result = f'x1 = {g}'
+            show_result = f'x1 = {g}\n'
         else:
             factor = find_common_factor_2numbers(a0 , de)
             if g > 0:
-                show_result = 'x1 = {}/{}'.format(abs(a0 // factor) , abs(de // factor))
+                show_result = 'x1 = {}/{}\n'.format(abs(a0 // factor) , abs(de // factor))
             else:
-                show_result = 'x1 = -{}/{}'.format(abs(a0 // factor) , abs(de // factor))
+                show_result = 'x1 = -{}/{}\n'.format(abs(a0 // factor) , abs(de // factor))
         if b0 == 0:
-            show_result = 'x2 = 0'
+            show_result += 'x2 = 0'
         elif b0 % de == 0:
-            show_result = 'x2 = {}'.format(h)
+            show_result += 'x2 = {}'.format(h)
         else:
             factor = find_common_factor_2numbers(b0 , de)
             if h > 0:
-                show_result = 'x2 = {}/{}'.format(abs(b0 // factor) , abs(de // factor))
+                show_result += 'x2 = {}/{}'.format(abs(b0 // factor) , abs(de // factor))
             else:
-                show_result = 'x2 = -{}/{}'.format(abs(b0 // factor) , abs(de // factor))
+                show_result += 'x2 = -{}/{}'.format(abs(b0 // factor) , abs(de // factor))
     else:
         aa = extract_common_factor(b , delta , de)
         b = b // aa
