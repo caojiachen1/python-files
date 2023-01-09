@@ -49,6 +49,7 @@ delta , eps = 0 , 1e-21
 a , b , c = int(input('a = ')) , int(input('b = ')) , int(input('c = '))
 show_equation , show_result = '' , ''
 show_x1 , show_x2 = '' , ''
+result = ['' , '']
 
 if a == 0:
     common_factor = find_common_factor_2numbers(b , c)
@@ -56,15 +57,19 @@ if a == 0:
     #b和c互质，c必不整除b
     match b:
         case 1:
-            show_result = 'x = {}'.format(-c)
+            show_equation = ''
+            show_result = f'x = {-c}'
+            result = [show_equation , show_result]
             print(show_result)
             end()
         case 0:
+            show_equation = ''
             show_result = 'All x' if c == 0 else 'No solution'
+            result = [show_equation , show_result]
             print(show_result)
             end()
         case -1:
-            show_result = 'x = {}'.format(c)
+            show_result = f'x = {c}'
             print(show_result)
             end()
     if c == 0:
@@ -72,13 +77,13 @@ if a == 0:
         show_result = 'x = 0'
         print(show_result)
     elif c < 0:
-        show_equation = '{}x - {} = 0'.format(b , -c)
-        show_result = 'x = {}/{}'.format(-c , b) if b > 0 else 'x = -{}/{}'.format(-c , -b)
+        show_equation = f'{b}x - {-c} = 0'
+        show_result = f'x = {-c}/{b}' if b > 0 else f'x = -{-c}/{-b}'
         print(show_equation)
         print(show_result)
     elif c > 0:
-        show_equation = '{}x + {} = 0'.format(b , c)
-        show_result = 'x = {}/{}'.format(-c , b) if b > 0 else 'x = -{}/{}'.format(c , -b)
+        show_equation = f'{b}x + {c} = 0'
+        show_result = f'x = {-c}/{b}' if b > 0 else f'x = -{c}/{-b}'
         print(show_equation)
         print(show_result)
     end()
@@ -197,53 +202,27 @@ if delta < 0:
         aa = find_common_factor_3numbers(b , delta , de)
         b , delta , de = b // aa , delta // aa , de // aa
         if b == 0:
-            if de == 1:
-                if delta == 1:
-                    show_result = 'x1 = i\nx2 = -i'
-                else:
-                    show_result = 'x1 = {}i\nx2 = - {}i'.format(delta , delta)
-            elif de == -1:
-                if delta == 1:
-                    show_result = 'x1 = i\nx2 = -i'
-                else:
-                    show_result = 'x1 = {}i\nx2 = -{}i'.format(delta , delta)
-            else:
-                if delta == 1:
-                    show_result = 'x1 = ({} + i)/{}\nx2 = ({} - i)/{}'.format(-b , de , -b , de)
-                else:
-                    show_result = 'x1 = ({} + {}i)/{}\nx2 = ({} - {}i)/{}'.format(-b , delta , de , -b , delta , de)
+            match de:
+                case 1:
+                    show_result = 'x1 = i\nx2 = -i' if delta == 1 else 'x1 = {}i\nx2 = - {}i'.format(delta , delta)
+                case -1:
+                    show_result = 'x1 = i\nx2 = -i' if delta == 1 else 'x1 = {}i\nx2 = -{}i'.format(delta , delta)
+                case _:
+                    show_result = 'x1 = ({} + i)/{}\nx2 = ({} - i)/{}'.format(-b , de , -b , de) if delta == 1 else 'x1 = ({} + {}i)/{}\nx2 = ({} - {}i)/{}'.format(-b , delta , de , -b , delta , de)
         elif b > 0:
             if de == 1:
-                if delta == 1:
-                    show_result = 'x1 = {} + i\nx2 = {} - i'.format(-b , -b)
-                else:
-                    show_result = 'x1 = {} + {}i\nx2 = {} - {}i'.format(-b , delta , -b , delta)
+                show_result = 'x1 = {} + i\nx2 = {} - i'.format(-b , -b) if delta == 1 else f'x1 = {-b} + {delta}i\nx2 = {-b} - {delta}i'
             elif de == -1:
-                if delta == 1:
-                    show_result = 'x1 = {} + i\nx2 = {} - i'.format(-b , -b)
-                else:
-                    show_result = 'x1 = {} + {}i\nx2 = {} - {}i'.format(b , delta , b , delta)
+                show_result = 'x1 = {} + i\nx2 = {} - i'.format(-b , -b) if delta == 1 else f'x1 = {b} + {delta}i\nx2 = {b} - {delta}i'
             else:
-                if delta == 1:
-                    show_result = 'x1 = ({} + i)/{}\nx2 = ({} - i)/{}'.format(-b , de , -b , de)
-                else:
-                    show_result = 'x1 = ({} + {}i)/{}\nx2 = ({} - {}i)/{}'.format(-b , delta , de , -b , delta , de)
+                show_result = f'x1 = ({-b} + i)/{de}\nx2 = ({-b} - i)/{de}' if delta == 1 else f'x1 = ({-b} + {delta}i)/{de}\nx2 = ({-b} - {delta}i)/{de}'
         elif b < 0:
             if de == 1:
-                if delta == 1:
-                    show_result = 'x1 = {} + i\nx2 = {} - i'.format(-b , -b)
-                else:
-                    show_result = 'x1 = {} + {}i\nx2 = {} - {}i'.format(-b , delta , -b , delta)
+                show_result = 'x1 = {} + i\nx2 = {} - i'.format(-b , -b) if delta == 1 else f'x1 = {-b} + {delta}i\nx2 = {-b} - {delta}i'
             elif de == -1:
-                if delta == 1:
-                    show_result = 'x1 = -{} + i\nx2 = -{} - i'.format(-b , -b)
-                else:
-                    show_result = 'x1 = -{} + {}i\nx2 = -{} - {}i'.format(-b , delta , -b , delta)
+                show_result = 'x1 = -{} + i\nx2 = -{} - i'.format(-b , -b) if delta == 1 else 'x1 = -{} + {}i\nx2 = -{} - {}i'.format(-b , delta , -b , delta)
             else:
-                if delta == 1:
-                    show_result = 'x1 = ({} + i)/{}\nx2 = ({} - i)/{}'.format(-b , de , -b , de)
-                else:
-                    show_result = 'x1 = ({} + {}i)/{}\nx2 = ({} - {}i)/{}'.format(-b , delta , de , -b , delta , de)
+                show_result = 'x1 = ({} + i)/{}\nx2 = ({} - i)/{}'.format(-b , de , -b , de) if delta == 1 else 'x1 = ({} + {}i)/{}\nx2 = ({} - {}i)/{}'.format(-b , delta , de , -b , delta , de)
     else:
         aa = extract_common_factor(b , delta , de)
         b , delta , de = b // aa , delta // (aa*aa) , de // aa
@@ -336,10 +315,7 @@ else:
         aaa = find_square_factor(delta)
         if b == 0:
             if de == 1:
-                if aaa == 1:
-                    show_result = 'x1 = sqrt({})\nx2 = -sqrt({})'.format(delta , delta)
-                else:
-                    show_result = f'x1 = {aaa}sqrt({delta // (aaa ** 2)})\nx2 = {aaa}sqrt({delta // (aaa ** 2)})'
+                show_result = 'x1 = sqrt({})\nx2 = -sqrt({})'.format(delta , delta) if aaa == 1 else f'x1 = {aaa}sqrt({delta // (aaa ** 2)})\nx2 = {aaa}sqrt({delta // (aaa ** 2)})'
             elif de == -1:
                 if aa == 1:
                     show_result = 'x1 = sqrt({})\nx2 = -sqrt({})'.format(delta , delta)
@@ -376,12 +352,12 @@ else:
                     show_result = f'x1 = {-b} + {aaa}sqrt({delta // (aaa ** 2)})\nx2 = {-b} - {aaa}sqrt({delta // (aaa ** 2)})'
             elif de == -1:
                 if aaa == 1:
-                    show_result = 'x1 = -{} + sqrt({})\nx2 = -{} - sqrt({})'.format(-b , delta , -b , delta)
+                    show_result = f'x1 = -{-b} + sqrt({delta})\nx2 = -{-b} - sqrt({delta})'
                 else:
                     show_result = f'x1 = -{-b} + {aaa}sqrt({delta // (aaa ** 2)})\nx2 = -{-b} - {aaa}sqrt({delta // (aaa ** 2)})'
             else:
                 if aaa == 1:
-                    show_result = 'x1 = ({} + sqrt({}))/{}\nx2 = ({} - sqrt({}))/{}'.format(-b , delta , de , -b , delta , de)
+                    show_result = f'x1 = ({-b} + sqrt({delta}))/{de}\nx2 = ({-b} - sqrt({delta}))/{de}'
                 else:
                     show_result = f'x1 = ({-b} + {aaa}sqrt({delta // (aaa ** 2)}))/{de}\nx2 = ({-b} - {aaa}sqrt({delta // (aaa ** 2)}))/{de}'
 print(show_result)
