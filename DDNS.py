@@ -27,8 +27,7 @@ class domain():
         return host_dict
 
     def get_current_public_ipv6(self):
-        text = requests.get('https://v6.ident.me').text
-        return text
+        return requests.get('https://v6.ident.me').text
 
     def domain_list(self):
         a = self.client.list_zone().zones
