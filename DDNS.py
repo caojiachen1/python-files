@@ -88,9 +88,8 @@ class domain():
             self.client.delete_record(zone_name = self.domain , record_id = self.info_list()[name]['id'])
 
 mine = domain('visitcjc.top')
-print(mine.domain_list())
-# mine.delete_all_dns()
-# mine.create_dns('1' , 'AAAA' , mine.get_current_public_ipv6())
+mine.delete_all_dns()
+mine.create_dns('www' , 'AAAA' , mine.get_current_public_ipv6())
 
 
 
