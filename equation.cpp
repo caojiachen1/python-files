@@ -7,47 +7,37 @@ int sprt(int,int,int);
 int q(int);
 bool isqrt(int k);
 int a,b,c,delta;
-int main()
-{
+int main(){
 	cout << "Input a:";
 	cin >> a;
 	cout << "Input b:";
 	cin >> b;
 	cout << "Input c:";
 	cin >> c;
-	if (a==0)
-	{
+	if (a==0){
 		int xx=p(b,c);
 		b/=xx;
 		c/=xx;
-		if (b!=1&&b!=0&&b!=-1)
-		{
-			if (c!=0) 
-			{
-				if (c<0)
-				{
+		if (b!=1&&b!=0&&b!=-1){
+			if (c!=0) {
+				if (c<0){
 					cout << b << "x-" << -c <<"=0" << endl;
-					if (c%b==0)
-					{
+					if (c%b==0){
 						if (b>0) cout << "x=" << -c/b << endl;
 				    	else if (b<0) cout << "x=-" << c/b << endl;
 					}
-					else 
-					{
+					else {
 						if (b>0) cout << "x=" << -c << "/" << b << endl;
 				    	else if (b<0) cout << "x=-" << -c << "/" << -b << endl;
 					}
 				}
-				else
-				{
+				else{
 					cout << b << "x+" << c <<"=0" << endl;
-					if (c%b==0)
-					{
+					if (c%b==0){
 						if (b>0) cout << "x=" << -c/b << endl;
 			    		else if (b<0) cout << "x=-" << -c/b << endl;
 					}
-					else 
-					{
+					else {
 						if (b>0) cout << "x=" << -c << "/" << b << endl;
 				    	else if (b<0) cout << "x=-" << c << "/" << -b << endl;
 					}
@@ -55,49 +45,38 @@ int main()
 			}
 			else if (c==0) cout << "x=0" << endl; 
 		}
-		else if (b==1)
-		{
-			if (c!=0) 
-			{
-				if (c<0)
-				{
+		else if (b==1){
+			if (c!=0) {
+				if (c<0){
 					cout << "x-" << -c << "=0" << endl;
 					cout << "x=" << -c << endl;
 				}
-				else 
-				{
+				else {
 					cout << "x+" << c << "=0" << endl;
 					cout << "x=" << -c << endl;
 				}
 			}
 			else if (c==0) cout << "x=0" << endl; 
 		}
-		else if (b==0)
-		{
-			if (c!=0) 
-			{
+		else if (b==0){
+			if (c!=0) {
 				cout << "No solution!" << endl;
 				system("pause");
 				return 0;
 			}
-			else if (c==0)
-			{
+			else if (c==0){
 				cout << "All x" << endl;
 				system("pause");
 				return 0;
 			}
 		}
-		else if (b==-1)
-		{
-			if (c!=0) 
-			{
-				if (c<0)
-				{
+		else if (b==-1){
+			if (c!=0) {
+				if (c<0){
 					cout << "-x-" << -c <<"=0" << endl;
 					cout << "x=" << c << endl;
 				}
-				else 
-				{
+				else {
 					cout << "-x+" << c <<"=0" << endl;
 					cout << "x=" << c << endl;
 				}
@@ -111,110 +90,88 @@ int main()
 	a/=cj;
 	b/=cj;
 	c/=cj;
-	if (c==0)
-	{
-		if (a==1)
-		{
+	if (c==0){
+		if (a==1){
 			if (b==1) cout << "x^2+" << "x" << "=0" << endl; 
 			else if (b==-1) cout << "x^2-" << "x" << "=0" << endl; 
-			else 
-			{
+			else {
 				if (b>0) cout << "x^2+" << b << "x" << "=0" << endl;
 				else if (b<0) cout << "x^2-" << -b << "x" << "=0" << endl;
 				else if (b==0) cout << "x^2" << "=0" << endl; 
 			} 
 		}
-		else if (a==-1)
-		{
+		else if (a==-1){
 			if (b==1) cout << "-x^2+" << "x" << "=0" << endl; 
 			else if (b==-1) cout << "-x^2-" << "x" << "=0" << endl; 
-			else 
-			{
+			else {
 				if (b>0) cout << "-x^2+" << b << "x" << "=0" << endl;
 				else if (b<0) cout << "-x^2-" << -b << "x" << "=0" << endl;
 				else if (b==0) cout << "-x^2" << "=0" << endl; 
 			} 
 		}
-		else 
-		{
+		else {
 			if (b==1) cout << a << "x^2+" << "x" << "=0" << endl; 
 			else if (b==-1) cout << a << "x^2-" << "x" << "=0" << endl; 
-			else 
-			{
+			else {
 				if (b>0) cout << a << "x^2+" << b << "x" << "=0" << endl; 
 				else if (b<0) cout << a << "x^2-" << -b << "x" << "=0" << endl;
 				else if (b==0) cout << a << "x^2" << "=0" << endl;
 			}
 		}
 	}
-	else 
-	{
-		if (c>0)
-		{
-			if (a==1)
-			{
+	else {
+		if (c>0){
+			if (a==1){
 				if (b==1) cout << "x^2+" << "x+" << c << "=0" << endl; 
 				else if (b==-1) cout << "x^2-" << "x+" << c << "=0" << endl; 
-				else 
-				{
+				else {
 					if (b>0) cout << "x^2+" << b << "x+" << c << "=0" << endl; 
 					else if (b<0) cout << "x^2-" << -b << "x+" << c << "=0" << endl; 
 					else if (b==0) cout << "x^2+" << c << "=0" << endl; 
 				}
 			}
-			else if (a==-1)
-			{
+			else if (a==-1){
 				if (b==1) cout << "-x^2+" << "x+" << c << "=0" << endl; 
 				else if (b==-1) cout << "-x^2-" << "x+" << c << "=0" << endl; 
-				else 
-				{
+				else {
 					if (b>0) cout << "-x^2+" << b << "x+" << c << "=0" << endl; 
 					else if (b<0) cout << "-x^2-" << -b << "x+" << c << "=0" << endl; 
 					else if (b==0) cout << "-x^2+" << c << "=0" << endl; 
 				}
 			}
-			else 
-			{
+			else {
 				if (b==1) cout << a << "x^2+" << "x+" << c << "=0" << endl; 
 				else if (b==-1) cout << a << "x^2-" << "x+" << c << "=0" << endl; 
-				else 
-				{
+				else {
 					if (b>0) cout << a << "x^2+" << b << "x+" << c << "=0" << endl; 
 					else if (b<0) cout << a << "x^2-" << -b << "x+" << c << "=0" << endl; 
 					else if (b==0) cout << a << "x^2+" << c << "=0" << endl; 
 				}
 			}
 		}
-		else if (c<0)
-		{
-			if (a==1)
-			{
+		else if (c<0){
+			if (a==1){
 				if (b==1) cout << "x^2+" << "x-" << -c << "=0" << endl; 
 				else if (b==-1) cout << "x^2-" << "x-" << -c << "=0" << endl; 
-				else 
-				{
+				else {
 					if (b>0) cout << "x^2+" << b << "x-" << -c << "=0" << endl; 
 					else if (b<0) cout << "x^2-" << -b << "x-" << -c << "=0" << endl; 
 					else if (b==0) cout << "x^2-" << -c << "=0" << endl; 
 				}
 			}
-			else if (a==-1)
-			{
+			else if (a==-1){
 				if (b==1) cout << "-x^2+" << "x-" << -c << "=0" << endl; 
 				else if (b==-1) cout << "-x^2-" << "x-" << -c << "=0" << endl; 
-				else 
-				{
+				else {
 					if (b>0) cout << "-x^2+" << b << "x-" << -c << "=0" << endl; 
 					else if (b<0) cout << "-x^2-" << -b << "x-" << -c << "=0" << endl; 
 					else if (b==0) cout << "-x^2-" << -c << "=0" << endl; 
 				}
 			}
-			else 
-			{
+			else {
 				if (b==1) cout << a << "x^2+" << "x-" << -c << "=0" << endl; 
 				else if (b==-1) cout << a << "x^2-" << "x-" << -c << "=0" << endl; 
-				else 
-				{
+				else {
 					if (b>0) cout << a << "x^2+" << b << "x-" << -c << "=0" << endl; 
 					else if (b<0) cout << a << "x^2-" << -b << "x-" << -c << "=0" << endl; 
 					else if (b==0) cout << a << "x^2-" << -c << "=0" << endl; 
@@ -225,139 +182,107 @@ int main()
 	int de=2*a;
 	delta=b*b-4*a*c;
 	cout << "Delta=" << delta << endl;
-	if (delta<0)
-	{
+	if (delta<0){
 		cout << "Unreal solution" << endl;
 		delta=-delta;
-		if (isqrt(delta))
-		{
+		if (isqrt(delta)){
 			delta=(int)(sqrt(delta));
 			int a0,b0;
 			int aa=p2(b,delta,de);
 			b/=aa;
 			delta/=aa;
 			de/=aa;
-			if (b==0)
-			{
-				if (de==1)
-		    	{
-		    		if (delta==1)
-		    		{
+			if (b==0){
+				if (de==1){
+		    		if (delta==1){
 		    			cout << "x1=" << "i" << endl;
 	                	cout << "x2=" << "-i" << endl;
 	    			}
-		    		else
-	    			{
+		    		else{
 	    				cout << "x1=" << delta << "i" << endl;
 	                	cout << "x2=" << "-" << delta << "i" << endl;
 	    			}
 		    	}
-		    	else if (de==-1)
-		    	{
-		    		if (delta==1)
-		    		{
+		    	else if (de==-1){
+		    		if (delta==1){
 		    			cout << "x1=" << "i" << endl;
 	                	cout << "x2=" << "-i" << endl;
 	    			}
-		    		else
-	    			{
+		    		else{
 	    				cout << "x1=" << delta << "i" << endl;
 	                	cout << "x2=" << "-" << delta << "i" << endl;
 	    			}
 		    	}
-	    		else
-	    		{
-		    		if (delta==1)
-		    		{
+	    		else{
+		    		if (delta==1){
 		    			cout << "x1=(" << -b << "+" << "i)/" << de << endl;
 	                    cout << "x2=(" << -b << "-" << "i)/" << de << endl;
 		    		}
-		    		else
-		    		{
+		    		else{
 		    			cout << "x1=(" << -b << "+" << delta << "i)/" << de << endl;
 	                    cout << "x2=(" << -b << "-" << delta << "i)/" << de << endl;
 		    		}
 		    	}
 			}
-			else if (b>0)
-			{
-				if (de==1)
-		    	{
-	    			if (delta==1)
-	    			{
+			else if (b>0){
+				if (de==1){
+	    			if (delta==1){
 	    				cout << "x1=" << -b << "+" << "i" << endl;
 	                	cout << "x2=" << -b << "-" << "i" << endl;
 	    			}
-	    			else
-	    			{
+	    			else{
 	    				cout << "x1=" << -b << "+" << delta << "i" << endl;
 	                	cout << "x2=" << -b << "-" << delta << "i" << endl;
 		    		}
 	    		}
-	    		else if (de==-1)
-	    		{
-	    			if (delta==1)
-	    			{
+	    		else if (de==-1){
+	    			if (delta==1){
 	    				cout << "x1=" << -b << "+" << "i" << endl;
 	                	cout << "x2=" << -b << "-" << "i" << endl;
 	    			}
-	    			else
-	    			{
+	    			else{
 	    				cout << "x1=" << b << "+" << delta << "i" << endl;
 	                	cout << "x2=" << b << "-" << delta << "i" << endl;
 		    		}
 	    		}
-	    		else
-	    		{
-	    			if (delta==1)
-	    			{
+	    		else{
+	    			if (delta==1){
 	    				cout << "x1=(" << -b << "+" << "i)/" << de << endl;
 	                    cout << "x2=(" << -b << "-" << "i)/" << de << endl;
 	    			}
-	    			else
-		    		{
+	    			else{
 	     				cout << "x1=(" << -b << "+" << delta << "i)/" << de << endl;
 	                    cout << "x2=(" << -b << "-" << delta << "i)/" << de << endl;
 	    			}
 	    		}
 			}
-			else if (b<0)
-			{
-				if (de==1)
-		    	{
-	    			if (delta==1)
-	    			{
+			else if (b<0){
+				if (de==1){
+	    			if (delta==1){
 	    				cout << "x1=" << -b << "+" << "i" << endl;
 	                	cout << "x2=" << -b << "-" << "i" << endl;
 	    			}
-	    			else
-	    			{
+	    			else{
 	    				cout << "x1=" << -b << "+" << delta << "i" << endl;
 	                	cout << "x2=" << -b << "-" << delta << "i" << endl;
 		    		}
 	    		}
-	    		else if (de==-1)
-	    		{
-	    			if (delta==1)
-	    			{
+	    		else if (de==-1){
+	    			if (delta==1){
 	    				cout << "x1=-" << -b << "+" << "i" << endl;
 	                	cout << "x2=-" << -b << "-" << "i" << endl;
 	    			}
-	    			else
-	    			{
+	    			else{
 	    				cout << "x1=-" << -b << "+" << delta << "i" << endl;
 	                	cout << "x2=-" << -b << "-" << delta << "i" << endl;
 		    		}
 	    		}
-	    		else
-	    		{
-	    			if (delta==1)
-	    			{
+	    		else{
+	    			if (delta==1){
 	    				cout << "x1=(" << -b << "+" << "i)/" << de << endl;
 	                    cout << "x2=(" << -b << "-" << "i)/" << de << endl;
 	    			}
-	    			else
-		    		{
+	    			else{
 	     				cout << "x1=(" << -b << "+" << delta << "i)/" << de << endl;
 	                    cout << "x2=(" << -b << "-" << delta << "i)/" << de << endl;
 	    			}

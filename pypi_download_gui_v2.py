@@ -11,8 +11,7 @@ dict_all = {}
 
 def search_page(module , page):
     global searchpage , a , s , links , page_num , i , names , versions , dict_all
-    links , names , versions , description = [] , [] , [] , []
-    dict_all = {}
+    links , names , versions , description , dict_all = [] , [] , [] , [] , {}
     searchpage = r'https://pypi.org/search/?q={}&page={page}'.format(module , page = page)
     a = requests.get(searchpage)
     s = bs(a.text , 'html.parser')
@@ -40,7 +39,7 @@ def search_page(module , page):
     page_num = page_num.replace(',' , '')
     try:
         page_num = int(page_num) // 20 + 1
-    except:
+    except Exception:
         page_num = 500
     return dict_all
 
@@ -48,11 +47,11 @@ def search(event):
     global module_name , current_page
     current_page = 1
     module_name = str(enter.get())
-    if module_name == '':
+    if not module_name:
         listbox_content.set('')
         return
     listbox_content.set(tuple(search_page(module_name , current_page).keys()))
-    show_page.set(str(current_page) + '/' + str(page_num))
+    show_page.set(f'{current_page}/{str(page_num)}')
 
 def next_page():
     global current_page
@@ -60,7 +59,7 @@ def next_page():
         return
     current_page = current_page + 1
     listbox_content.set(tuple(search_page(module_name , current_page).keys()))
-    show_page.set(str(current_page) + '/' + str(page_num))
+    show_page.set(f'{str(current_page)}/{str(page_num)}')
 
 def prev_page():
     global current_page
@@ -68,16 +67,17 @@ def prev_page():
         return
     current_page = current_page - 1
     listbox_content.set(tuple(search_page(module_name , current_page).keys()))
-    show_page.set(str(current_page) + '/' + str(page_num))
+    show_page.set(f'{str(current_page)}/{str(page_num)}')
 
 def get_pip_command():
     global current_module , command , app , is_open
     try:
         current_module = listbox.get(listbox.curselection())
-    except:
+    except Exception:
         return
 
-    s = bs(requests.get(r'https://pypi.org/project/{}/'.format(current_module)).text , 'html.parser')
+    s = bs(requests.get(f'https://pypi.org/project/{current_module}/').text, 'html.parser')
+
     command = s.find('span' , id = 'pip-command').string
 
     app = Application().start('wt.exe')
@@ -93,11 +93,11 @@ def show_details():
     global current_module
     try:
         current_module = listbox.get(listbox.curselection())
-    except:
+    except Exception:
         return
-    
+
     a = dict_all[current_module]
-    msgbox.showinfo('详情' , 'version : {}\nlink : {}\ndescription : {}'.format(a[0] , a[1] , a[2]))
+    msgbox.showinfo('详情', f'version : {a[0]}\nlink : {a[1]}\ndescription : {a[2]}')
 
 def center_window(root : tkinter.Tk, width, height):
     screenwidth , screenheight = root.winfo_screenwidth() , root.winfo_screenheight()
@@ -125,8 +125,8 @@ enter.bind('<Return>' , search)
 prev = tkinter.Button(root , text = '<' , command = prev_page)
 prev.pack(side = tkinter.LEFT)
 
-next = tkinter.Button(root , text = '>' , command = next_page)
-next.pack(side = tkinter.RIGHT)
+to_next = tkinter.Button(root , text = '>' , command = next_page)
+to_next.pack(side = tkinter.RIGHT)
 
 detail = tkinter.Button(root , text = '介绍' , command = show_details , height = 1 , width = 4)
 detail.place(relx = 0.65 , rely = 0.03)

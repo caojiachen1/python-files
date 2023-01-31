@@ -7,20 +7,20 @@ stop = False
 
 def type_keys(text):
     text = text.replace(' ' , r'\ ')
-    os.system('adb shell input text {}'.format(text))
+    os.system(f'adb shell input text {text}')
 
 def swipe(x1 , y1 , x2 , y2):
-    os.system('adb shell input swipe {} {} {} {}'.format(str(x1) , str(y1) , str(x2) , str(y2)))
+    os.system(f'adb shell input swipe {str(x1)} {str(y1)} {str(x2)} {str(y2)}')
 
 def start():
     global i , get_time
     if time_get.get() == '':
         return
     get_time = int(time_get.get())
-    for i in range(get_time // 5 + 1):
+    for _ in range(get_time // 5 + 1):
         os.system('adb shell input swipe 540 1500 540 800')
         time.sleep(5)
-    msgbox.showinfo('结束' , '{}秒自动刷短视频结束！'.format(get_time))
+    msgbox.showinfo('结束', f'{get_time}秒自动刷短视频结束！')
 
 def center_window(root : tkinter.Tk, width, height):
     screenwidth , screenheight = root.winfo_screenwidth() , root.winfo_screenheight()

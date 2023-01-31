@@ -9,17 +9,16 @@ def get_download_url(module_name):
     if module_name == '':
         return {}
     global url , a , soup , l , links , name_list , d , results , u , name
-    url = 'https://pypi.tuna.tsinghua.edu.cn/simple/{}/'.format(module_name)
+    url = f'https://pypi.tuna.tsinghua.edu.cn/simple/{module_name}/'
     a = requests.get(url)
     soup = bs(a.text , 'html.parser')
     l , links , name_list , d = [] , [] , [] , {}
-    for link in soup.find_all('a'):
-        l.append(link.get('href'))
+    l.extend(link.get('href') for link in soup.find_all('a'))
     for u in l:
-        u = str('https://pypi.tuna.tsinghua.edu.cn' + u[5:])
+        u = str(f'https://pypi.tuna.tsinghua.edu.cn{u[5:]}')
         links.append(u)
-        results = re.search(r'{}(.*?)#sha256='.format(module_name) , str(u) , re.IGNORECASE)
-        name = module_name + results.group(1)
+        results = re.search(f'{module_name}(.*?)#sha256=', u, re.IGNORECASE)
+        name = module_name + results[1]
         name_list.append(name)
     for i in range(name_list.__len__()):
         d[name_list[i]] = links[i]
@@ -31,23 +30,26 @@ def search():
     listbox_content.set(tuple(get_download_url(module).keys()))
 
 def download():
-    global parent
     try:
         n = listbox.get(listbox.curselection())
-    except:
+    except Exception:
         return
     try:
-        download_link = get_download_url(module)[n]
-        path = os.path.join(r'C:\Users\caoji\Downloads' , n)
-        with open(path , mode = 'wb') as f:
-            a = requests.get(download_link)
-            f.write(a.content)
-        msgbox.showinfo('提示' , '下载成功')
-        parent = os.path.split(path)[0]
-        os.startfile(parent)
-    except:
+        _extracted_from_download_8(n)
+    except Exception:
         msgbox.showerror('提示' , '下载失败')
         return
+
+def _extracted_from_download_8(n):
+    global parent
+    download_link = get_download_url(module)[n]
+    path = os.path.join(r'C:\Users\caoji\Downloads' , n)
+    with open(path , mode = 'wb') as f:
+        a = requests.get(download_link)
+        f.write(a.content)
+    msgbox.showinfo('提示' , '下载成功')
+    parent = os.path.split(path)[0]
+    os.startfile(parent)
 
 module = ''
 

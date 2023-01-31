@@ -44,10 +44,9 @@ def game():
         if event.type == pygame.QUIT:
             quitpygame()
             return
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                quitpygame()
-                return
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            quitpygame()
+            return
     ballrect = ballrect.move(speed[0] , speed[1])
     if ballrect.left < 0 or ballrect.right > width:
         speed[0] = -speed[0]
@@ -57,27 +56,27 @@ def game():
         cursorx , cursory = pygame.mouse.get_pos()
         if ballrect.right > int(cursorx-plat_length/2) and ballrect.left < int(cursorx + plat_length/2):
             speed[1] = -speed[1]
-            if not lose:
-                score = score + difficulty
+            score += 0 if lose else difficulty
         else:
             lose = True
 
     screen.fill(0)
     screen.blit(ball , (ballrect.left , ballrect.top))
     cursorx , cursory = pygame.mouse.get_pos()
-    scoreset = "你的成绩: " + str(score)
+    scoreset = f"你的成绩: {str(score)}"
     fontrect3 = fonts.render_to(screen , (10 , 10) , scoreset , fgcolor = GOLD , size = 20)
     pygame.draw.line(screen , GOLD , (int(cursorx-plat_length/2) , height) , (int(cursorx + plat_length/2) , height) , spline_width)
 
     if lose:
         screen.fill(0)
-        fontrect = fonts.render_to(screen , (int(width/2-120) , int(height/2-50)) , "你输了！" , fgcolor = GOLD , size = 50)
-        fontrect2 = fonts.render_to(screen , (int(width/2-120) , int(height/2-100)) , "成绩：" + str(score) , fgcolor = GOLD , size = 30)
-        if score>maxscore and not shown:
+        fontrect = fonts.render_to(screen , (int(width / 2 - 120) , int(height / 2 - 50)) , "你输了！" , fgcolor = GOLD , size = 50)
+        fontrect2 = fonts.render_to(screen , (int(width / 2 - 120) , int(height / 2 - 100)) , f"成绩：{str(score)}" , fgcolor = GOLD, size = 30)
+
+        if score > maxscore and not shown:
             if maxscore != -1:
                 msgbox.showinfo('新高分' , '恭喜您获得了新的最高分！')
             maxscore = score
-            show_max_score.set('最高分:' + str(maxscore))
+            show_max_score.set(f'最高分:{str(maxscore)}')
             shown = True
 
     pygame.display.update()
@@ -109,7 +108,7 @@ difficulty_scale.place(relx = 0.175 , rely = 0.15)
 start = tk.Button(root , text = '开始游戏' , command = game_main , width = 8 , height = 1)
 start.place(relx = 0.4 , rely = 0.65)
 
-max = tk.Label(root , textvariable = show_max_score)
-max.place(relx = 0.35 , rely = 0.1)
+max_score = tk.Label(root , textvariable = show_max_score)
+max_score.place(relx = 0.35 , rely = 0.1)
 
 root.mainloop()

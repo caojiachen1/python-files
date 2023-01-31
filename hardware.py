@@ -1,21 +1,20 @@
 from __future__ import print_function
 import string
-from xmlrpc.client import Boolean
 import pywifi
 from pywifi import const
 import sys,ctypes,time
 from bluetooth import *
 from bluetooth.windows import discover_devices
 import datetime
-import asyncio
 # from winrt.windows.devices import radios
 
 def get_admin():
     def is_admin():
         try:
             return ctypes.windll.shell32.IsUserAnAdmin()
-        except:
+        except Exception:
             return False
+
     if not is_admin():
         ctypes.windll.shell32.ShellExecuteW(None , "runas" , sys.executable , __file__ , None , 1)
 
@@ -69,12 +68,10 @@ class wifi():
         results = wireless.scan_results()
         wifi_results = []
         for profiles in results:
-            d = {}
-            d['ssid'] = profiles.ssid
-            d['key'] = profiles.key
+            d = {'ssid': profiles.ssid, 'key': profiles.key}
             if d['ssid'] != '':
                 wifi_results.append(d)
-        wifi_results = [dict(t) for t in set([tuple(d.items()) for d in wifi_results])]
+        wifi_results = [dict(t) for t in {tuple(d.items()) for d in wifi_results}]
         return wifi_results
     
 class bluetooth():
@@ -90,11 +87,11 @@ class bluetooth():
         global already,results,loop_time
         loop_time = 0
         try:
-            while (loop_time := loop_time +1) and (a := discover_devices(lookup_names = True , duration = 5)) and (loop_time <= 3):
+            while (loop_time := loop_time + 1) and (a := discover_devices(lookup_names = True , duration = 5)) and (loop_time <= 3):
                 if a.__len__ > 0:
                     break
             time.sleep(2)
-        except:
+        except Exception:
             return None
         already = []
         results = []
@@ -105,7 +102,7 @@ class bluetooth():
                 results.append({'Device:' : name , 'Mac:' : addr})
                 already.append(name)
                 self.devices_nearby[name] = addr
-        if results == []:
+        if not results:
             results = None
             self.devices_nearby = None
         return results
@@ -114,16 +111,13 @@ class bluetooth():
         self.scan()
         try:
             addr = self.devices_nearby[name]
-        except:
+        except Exception:
             return None
         return addr
  
     def find(self, target_name : string):
         self.scan()
-        if target_name in self.devices_nearby.keys():
-            self.found = True
-        else:
-            self.found = False
+        self.found = target_name in self.devices_nearby.keys()
         return self.found
  
     def connect(self , target_name , target_address) -> bool:

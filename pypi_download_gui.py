@@ -15,13 +15,13 @@ def search_page(module , page):
     s = bs(a.text , 'html.parser')
     for link in s.find_all('a'):
         u = str(link.get('href'))
-        if u[:8] == '/project':
+        if u.startswith('/project'):
             links.append(u[9:-1])
     page_num = str(s.find_all('strong')[0])[8:-9]
     page_num = page_num.replace(',' , '')
     try:
         page_num = int(page_num) // 20 + 1
-    except:
+    except Exception:
         page_num = 500
     return links
 
@@ -29,11 +29,11 @@ def search():
     global module_name , current_page
     current_page = 1
     module_name = str(enter.get())
-    if module_name == '':
+    if not module_name:
         listbox_content.set('')
         return
     listbox_content.set(tuple(search_page(module_name , current_page)))
-    show_page.set(str(current_page) + '/' + str(page_num))
+    show_page.set(f'{current_page}/{str(page_num)}')
 
 def next_page():
     global current_page
@@ -41,7 +41,7 @@ def next_page():
         return
     current_page = current_page + 1
     listbox_content.set(tuple(search_page(module_name , current_page)))
-    show_page.set(str(current_page) + '/' + str(page_num))
+    show_page.set(f'{str(current_page)}/{str(page_num)}')
 
 def prev_page():
     global current_page
@@ -49,16 +49,17 @@ def prev_page():
         return
     current_page = current_page - 1
     listbox_content.set(tuple(search_page(module_name , current_page)))
-    show_page.set(str(current_page) + '/' + str(page_num))
+    show_page.set(f'{str(current_page)}/{str(page_num)}')
 
 def get_pip_command():
     global current_module , command , app , is_open
     try:
         current_module = listbox.get(listbox.curselection())
-    except:
+    except Exception:
         return
 
-    s = bs(requests.get(r'https://pypi.org/project/{}/'.format(current_module)).text , 'html.parser')
+    s = bs(requests.get(f'https://pypi.org/project/{current_module}/').text, 'html.parser')
+
     command = s.find('span' , id = 'pip-command').string
 
     app = Application().start('wt.exe')
@@ -95,8 +96,8 @@ enter.place(relx = 0.1 , rely = 0.05)
 prev = tkinter.Button(root , text = '<' , command = prev_page)
 prev.pack(side = tkinter.LEFT)
 
-next = tkinter.Button(root , text = '>' , command = next_page)
-next.pack(side = tkinter.RIGHT)
+to_next = tkinter.Button(root , text = '>' , command = next_page)
+to_next.pack(side = tkinter.RIGHT)
 
 button = tkinter.Button(root , text = '搜索' , command = search , height = 1 , width = 4)
 button.place(relx = 0.67 , rely = 0.04)

@@ -3,7 +3,7 @@ import time
 
 d = u2.connect()
 d.app_start('com.xiaomi.vipaccount')
-d(text="随手拍").click()
+# d(text="随手拍").click()
 i = 0
 while True:
     d.swipe(540 , 1400 , 540 , 600)

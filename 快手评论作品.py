@@ -20,7 +20,7 @@ package = {
 try:
     os.system('adb devices')
     d = u2.connect()
-except:
+except Exception:
     msgbox.showerror('错误' , '手机未连接!')
     sys.exit()
 
@@ -29,16 +29,13 @@ def get_current_package_name():
     a = os.popen('adb shell dumpsys window | findstr mCurrentFocus')
     result = a.read()
     s = re.search(r'mCurrentFocus=Window{.* com.(.*?)}' , result , re.IGNORECASE)
-    s = 'com.' + str(s.group(1))
+    s = f'com.{str(s[1])}'
     return s
     
 def current_app():
     '''获取手机现在运行的当前程序名称,在保存的字典中进行检索,没有收录在字典中的进程页面会返回Unknown,否则返回进程页面名称'''
     s = get_current_package_name()
-    if s in package.keys():
-        return package[s]
-    else:
-        return 'Unknown'
+    return package[s] if s in package.keys() else 'Unknown'
 
 def auto_comment():
     '''快手自动评论刷金币.需要滑动到评论按钮出现在屏幕上'''
@@ -47,7 +44,7 @@ def auto_comment():
         return
     try:
         d(text="去评论").click()
-    except:
+    except Exception:
         msgbox.showerror('错误' , '找不到评论按钮!')
         return
     time.sleep(1)
@@ -76,7 +73,7 @@ def auto_praise():
         return
     try:
         d(text="去点赞").click()#点击点赞按钮
-    except:
+    except Exception:
         msgbox.showerror('错误' , '找不到点赞按钮!')
         return
     time.sleep(1)
@@ -97,13 +94,13 @@ def auto_withdraw():
         return
     try:
         d(text="领现金").click()#点击领现金按钮
-    except:
+    except Exception:
         msgbox.showerror('错误' , '找不到提现按钮!')
         return
     time.sleep(1)
     try:
         d(text="立即提现").click()#点击立即提现按钮
-    except:
+    except Exception:
         msgbox.showerror('错误' , '已经提现!')
         return
     time.sleep(1)

@@ -71,8 +71,8 @@ class file():
         self.info = {'path' : self.path , 'size' : self.size , 'name' : self.name , 'type' : self.type}
 
     def rename(self , new_name):
-        dir = os.path.split(self.path)[0]
-        dir_ = os.path.join(dir , new_name)
+        directory = os.path.split(self.path)[0]
+        dir_ = os.path.join(directory , new_name)
         try:
             os.rename(self.path , os.path.join(dir_))
             self.path = dir_
@@ -128,7 +128,7 @@ class video(file):
             v = cv2.VideoCapture(self.path)
             probe = ffmpeg.probe(self.path)
             self.codec = probe['streams'][0]['codec_name']
-            self.bitrate = int(int(probe['format']['bit_rate'])/1024)
+            self.bitrate = int(probe['format']['bit_rate']) // 1024
             self.resolution = int(v.get(cv2.CAP_PROP_FRAME_WIDTH)) , int(v.get(cv2.CAP_PROP_FRAME_HEIGHT))
             self.fps = v.get(cv2.CAP_PROP_FPS)
             self.frames = v.get(cv2.CAP_PROP_FRAME_COUNT)
@@ -152,7 +152,7 @@ class video(file):
             print('Not a video file!')
             return
         a = AudioFileClip(self.path)
-        b = splitname(self.path)[0] + '.wav'
+        b = f'{splitname(self.path)[0]}.wav'
         self.audio_path = os.path.join(self.parent , b)
         a.write_audiofile(self.audio_path)
         return audio(self.audio_path)
@@ -162,7 +162,7 @@ class video(file):
             print('Not a video file!')
             return
         a = VideoFileClip(self.path)
-        b = splitname(self.path)[0] + '_noaudio.mp4'
+        b = f'{splitname(self.path)[0]}_noaudio.mp4'
         v = a.without_audio()
         self.newpath = os.path.join(self.parent , b)
         v.write_videofile(self.newpath)
@@ -204,8 +204,7 @@ class picture(file):
         if not self.isimage:
             print('Not a picture!')
             return
-        img2 = cv2.cvtColor(img , cv2.COLOR_BGR2GRAY)
-        return img2
+        return cv2.cvtColor(img , cv2.COLOR_BGR2GRAY)
 
     def show(self):
         if not self.isimage:
@@ -278,10 +277,10 @@ class zip(file):
             if compress_type is None:
                 self.compress_type[files.filename] = None
             else:
-                self.compress_type[files.filename] = compress_type.group(1)
+                self.compress_type[files.filename] = compress_type[1]
             self.last_modified_time[files.filename] = files.date_time
-            self.compress_size[files.filename] = round(files.compress_size/1024 , 1)
-            self.original_size[files.filename] = round(files.file_size/1024 , 1)
+            self.compress_size[files.filename] = round(files.compress_size / 1024 , 1)
+            self.original_size[files.filename] = round(files.file_size / 1024 , 1)
             if files.file_size == 0:
                 self.compression_rate[files.filename] = 0
             else:
@@ -292,11 +291,11 @@ class zip(file):
             z.write(path)
 
     def extractall(self):
-        folder_name = os.path.join(self.parent , splitname(self.path)[0]  +  '_')
+        folder_name = os.path.join(self.parent , f'{splitname(self.path)[0]}_')
         if not os.path.isdir(folder_name):
             os.makedirs(folder_name)
         f = file(self.path)
-        f.copy(folder_name + '.' + splitname(self.path)[1])
+        f.copy(f'{folder_name}.{splitname(self.path)[1]}')
         z = zipfile.ZipFile(self.path)
         for name in z.namelist():
             z.extract(name , folder_name)

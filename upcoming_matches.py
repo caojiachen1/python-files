@@ -12,6 +12,11 @@ revert = {
     '赛制' : 'format'
 }
 
+def get_date(link):
+    b = bs(requests.get(link).text , 'html.parser')
+    for i in b.find_all('div' , class_ = 'date'):
+        pass
+
 def filter(filter_type , filter_name):
     '''
         搜索符合筛选的比赛信息,返回符合的所有比赛列表
@@ -55,6 +60,12 @@ info_list , info , time = [] , {} , ''
 for i in s.find_all('a' , class_ = 'match a-reset'):
     info = {}
     s_ = bs(str(i) , 'html.parser')
+    # for k in s_.find_all('a'):
+    #     if k['href'][:8] == '/matches':
+    #         url = r'https://www.hltv.org' + k['href']
+    #         bs_ = bs(requests.get(url).text , 'html.parser')
+    #         for ij in bs_.find_all('div' , class_ = 'date'):
+    #             print('{} {}'.format(ij['class'] , ij.string))
     for j in s_.find_all('div'):
         if j['class'][0] == 'matchTime':
             if j.string == 'LIVE':

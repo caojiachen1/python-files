@@ -12,7 +12,7 @@ print("You can load a picture from your system")
 print("You can drag it or scale it")
 print("Press TAB to move the picture to (0,0)")
 print("Press Q to reload the picture")
-pic_path=filedialog.askopenfilename()
+pic_path=filedialog.askopenfilename(filetypes=[("pic","*.jpg")])
 zoom_multiple=float(input("Input scale mutiple:"))
 # pic_path="D:\\beauty2.jpg"
 myfont=pygame.freetype.Font("C:\\Windows\\Fonts\\msyh.ttc",36)
@@ -47,17 +47,17 @@ while True:
                 back=pygame.image.load(pic_path)
                 back2=back
         elif event.type==pygame.MOUSEBUTTONDOWN:
-            if event.button==1:
+            if event.button == 1:
                 click=True
                 xx,yy=pygame.mouse.get_pos()
                 if (xx<x) or (xx>x+back.get_width()) or (yy<y) or (yy>y+back.get_height()):
                     click=False
-            if event.button==4:
+            elif event.button == 4:
                 if (back.get_width()<5000) and (back.get_height()<5000):
                     multiple+=1
                     up=True
                     down=False
-            elif event.button==5:
+            elif event.button == 5:
                 if (back.get_width()>0) and (back.get_height()>0):
                     multiple-=1
                     down=True
@@ -83,5 +83,5 @@ while True:
     screen.fill(0)
     screen.blit(back,(x,y))
     # screen.blit(cursor,pygame.mouse.get_pos())
-    myprint=myfont.render_to(screen,(10,10),"Pic path:"+pic_path,fgcolor=(255,255,255),size=20)
+    myprint = myfont.render_to(screen, (10, 10), f"Pic path:{pic_path}", fgcolor=(255, 255, 255), size=20)
     pygame.display.update()
