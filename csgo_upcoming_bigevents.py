@@ -8,15 +8,16 @@ a = requests.get(r'https://www.hltv.org/events')
 s = bs(a.text , 'html.parser')
 for i in s.find_all('div' , class_ = 'big-events'):
     s_ = bs(str(i) , 'html.parser')
-    for j in s_.find_all('div' , class_ = 'big-event-name'):
-        event.append(j.string)
-
-    for j in s_.find_all('td'):
-        if j.get('class') == ['col-value', 'col-date']:
-            time.append(j.text)
-
-for i in range(event.__len__()):
-    info.append('{}'.format(event[i]).rjust(40) + '{}'.format(time[i]).rjust(25) + ''.rjust(13))
+    event.extend(j.string for j in s_.find_all('div' , class_ = 'big-event-name'))
+    time.extend(
+        j.text
+        for j in s_.find_all('td')
+        if j.get('class') == ['col-value', 'col-date']
+    )
+info.extend(
+    f'{event[i]}'.rjust(40) + f'{time[i]}'.rjust(25) + ''.rjust(13)
+    for i in range(event.__len__())
+)
 
 def center_window(root : tkinter.Tk , width , height):
     screenwidth , screenheight = root.winfo_screenwidth() , root.winfo_screenheight()
