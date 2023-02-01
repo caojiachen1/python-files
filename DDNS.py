@@ -1,6 +1,6 @@
-from baidubce.bce_client_configuration import *
+from baidubce.bce_client_configuration import BceClientConfiguration
 from baidubce.services.dns import dns_client
-from baidubce.auth.bce_credentials import *
+from baidubce.auth.bce_credentials import BceCredentials
 import socket , requests
 
 class domain():
@@ -26,7 +26,6 @@ class domain():
         return requests.get('https://v6.ident.me').text
 
     def domain_list(self):
-        a = self.__client.list_zone().zones
         return [
             {'id' : zone.id ,
             'name' : zone.name , 
@@ -34,16 +33,14 @@ class domain():
             'product_version' : zone.product_version , 
             'create_time' : zone.create_time , 
             'expire_time' : zone.expire_time} 
-            for zone in a
+            for zone in self.__client.list_zone().zones
         ]
 
     def info_list(self):
-        result = self.__client.list_record(zone_name = self.domain).records
-        info = {
+        return {
             record.rr: {'id': record.id, 'value': record.value}
-            for record in result
+            for record in self.__client.list_record(zone_name = self.domain).records
         }
-        return info
 
     def create_dns(self , name , type , value):
         if name in list(self.info_list().keys()):
