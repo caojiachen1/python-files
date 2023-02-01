@@ -1,19 +1,15 @@
 from baidubce.bce_client_configuration import *
 from baidubce.services.dns import dns_client
 from baidubce.auth.bce_credentials import *
-from baidubce.exception import *
 import socket , requests
-
-AK = 'e785a3c14c8f4f17983173db18244488'
-SK = '39735f09986a480785c1687fd9bed092'
 
 class domain():
     def __init__(self , domain):
         self.domain = domain
-        self.AK = AK
-        self.SK = SK
-        self.config = BceClientConfiguration(credentials = BceCredentials(self.AK, self.SK), endpoint = 'dns.baidubce.com')
-        self.client = dns_client.DnsClient(self.config)
+        self.__AK = 'e785a3c14c8f4f17983173db18244488'
+        self.__SK = '39735f09986a480785c1687fd9bed092'
+        self.__config = BceClientConfiguration(credentials = BceCredentials(self.__AK, self.__SK), endpoint = 'dns.baidubce.com')
+        self.__client = dns_client.DnsClient(self.__config)
 
     def get_current_all_ip():
         IPs = socket.getaddrinfo(socket.gethostname() , 80)
@@ -30,7 +26,7 @@ class domain():
         return requests.get('https://v6.ident.me').text
 
     def domain_list(self):
-        a = self.client.list_zone().zones
+        a = self.__client.list_zone().zones
         return [
             {'id' : zone.id ,
             'name' : zone.name , 
@@ -42,7 +38,7 @@ class domain():
         ]
 
     def info_list(self):
-        result = self.client.list_record(zone_name = self.domain).records
+        result = self.__client.list_record(zone_name = self.domain).records
         info = {
             record.rr: {'id': record.id, 'value': record.value}
             for record in result
@@ -58,7 +54,7 @@ class domain():
             'type': type,
             'value': value
         }
-        self.client.create_record(zone_name = self.domain , create_record_request = create_record_request)
+        self.__client.create_record(zone_name = self.domain , create_record_request = create_record_request)
 
     def update_dns(self , name , type , value):
         if name not in list(self.info_list().keys()):
@@ -73,26 +69,31 @@ class domain():
             'value': value
         }
         record_id = self.info_list()[name]['id']
-        self.client.update_record(zone_name = self.domain , update_record_request = update_record_request , record_id = record_id)
+        self.__client.update_record(zone_name = self.domain , update_record_request = update_record_request , record_id = record_id)
 
     def delete_dns(self , name):
         if name not in list(self.info_list().keys()):
             print('Record does not exist!')
             return
-        self.client.delete_record(zone_name = self.domain , record_id = self.info_list()[name]['id'])
+        self.__client.delete_record(zone_name = self.domain , record_id = self.info_list()[name]['id'])
 
     def delete_all_dns(self):
         if not self.info_list():
             return
         for name in list(self.info_list().keys()):
-            self.client.delete_record(zone_name = self.domain , record_id = self.info_list()[name]['id'])
+            self.__client.delete_record(zone_name = self.domain , record_id = self.info_list()[name]['id'])
+
+    def ddns(self, name):
+        if self.info_list().keys().__len__() == 1:
+            a = list(self.info_list().keys())
+            if a[0] == name:
+                print('yes')
+                if self.info_list()[name]['value'] != self.get_current_public_ipv6():
+                    self.update_dns(name , 'AAAA' , self.get_current_public_ipv6())
+        else:
+            self.delete_all_dns()
+            self.create_dns(name , 'AAAA' , mine.get_current_public_ipv6())
 
 mine = domain('visitcjc.top')
-mine.delete_all_dns()
-mine.create_dns('www' , 'AAAA' , mine.get_current_public_ipv6())
 
-
-
-
-
-
+mine.ddns('www')
