@@ -11,7 +11,10 @@ class domain():
         self.__config = BceClientConfiguration(credentials = BceCredentials(self.__AK, self.__SK), endpoint = 'dns.baidubce.com')
         self.__client = dns_client.DnsClient(self.__config)
 
-    def get_current_all_ip():
+    def get_current_public_ipv6(self):
+        return requests.get('https://v6.ident.me').text
+    
+    def get_current_all_ip(self):
         IPs = socket.getaddrinfo(socket.gethostname() , 80)
         host_list = [IP[4][0] for IP in IPs]
         host_dict = {'ipv4' : None , 'ipv6' : []}
@@ -20,25 +23,23 @@ class domain():
                 host_dict['ipv4'] = i
             else:
                 host_dict['ipv6'].append(i)
+        host_dict['ipv6'].append(self.get_current_public_ipv6())
         return host_dict
-
-    def get_current_public_ipv6(self):
-        return requests.get('https://v6.ident.me').text
 
     def domain_list(self):
         return [
             {'id' : zone.id ,
-            'name' : zone.name , 
-            'status' : zone.status , 
-            'product_version' : zone.product_version , 
-            'create_time' : zone.create_time , 
-            'expire_time' : zone.expire_time} 
+            'name' : zone.name ,
+            'status' : zone.status ,
+            'product_version' : zone.product_version ,
+            'create_time' : zone.create_time ,
+            'expire_time' : zone.expire_time}
             for zone in self.__client.list_zone().zones
         ]
 
     def info_list(self):
         return {
-            record.rr: {'id': record.id, 'value': record.value}
+            record.rr: {'id': record.id, 'value': record.value , 'type' : record.type , 'status' : record.status , 'ttl' : record.ttl}
             for record in self.__client.list_record(zone_name = self.domain).records
         }
 
@@ -54,10 +55,11 @@ class domain():
         self.__client.create_record(zone_name = self.domain , create_record_request = create_record_request)
 
     def update_dns(self , name , type , value):
-        if name not in list(self.info_list().keys()):
+        info = self.info_list()
+        if name not in list(info.keys()):
             print('Record does not exist!')
             return
-        if value == self.info_list()[name]['value']:
+        if value == info[name]['value'] and type == info[name]['type']:
             print('Do not need to change!')
             return
         update_record_request = {
@@ -80,17 +82,26 @@ class domain():
         for name in list(self.info_list().keys()):
             self.__client.delete_record(zone_name = self.domain , record_id = self.info_list()[name]['id'])
 
+    def enable_dns(self , name):
+        if name not in list(self.info_list().keys()):
+            print('Record does not exist!')
+            return
+        self.__client.update_record_enable(zone_name = self.domain , record_id = self.info_list()[name]['id'])
+
+    def disable_dns(self , name):
+        if name not in list(self.info_list().keys()):
+            print('Record does not exist!')
+            return
+        self.__client.update_record_disable(zone_name = self.domain , record_id = self.info_list()[name]['id'])
+
     def ddns(self, name):
-        if self.info_list().keys().__len__() == 1:
-            a = list(self.info_list().keys())
-            if a[0] == name:
-                print('yes')
-                if self.info_list()[name]['value'] != self.get_current_public_ipv6():
-                    self.update_dns(name , 'AAAA' , self.get_current_public_ipv6())
+        a = list(self.info_list().keys())
+        if self.info_list().keys().__len__() == 1 and a[0] == name and self.info_list()[name]['value'] != self.get_current_public_ipv6():
+            self.update_dns(name , 'AAAA' , self.get_current_public_ipv6())
         else:
             self.delete_all_dns()
             self.create_dns(name , 'AAAA' , mine.get_current_public_ipv6())
 
-mine = domain('visitcjc.top')
-
-mine.ddns('www')
+if __name__ == "__main__":
+    mine = domain('visitcjc.top')
+    mine.ddns('@')
