@@ -100,7 +100,7 @@ class domain():
             self.update_dns(name , 'AAAA' , self.get_current_public_ipv6())
         else:
             self.delete_all_dns()
-            self.create_dns(name , 'AAAA' , mine.get_current_public_ipv6())
+            self.create_dns(name , 'AAAA' , self.get_current_public_ipv6())
 
 if __name__ == "__main__":
     mine = domain('visitcjc.top')
