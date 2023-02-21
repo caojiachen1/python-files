@@ -119,6 +119,15 @@ class audio(file):
             self.channels , self.sampwidth , self.framerate , self.frames = info[:4]
             self.duration = round(self.frames/self.framerate)
 
+    def cut(self , start_time , end_time):
+        if start_time < 0 or end_time < start_time or start_time >= self.duration:
+            return
+        a = AudioFileClip(self.path).subclip(start_time , min(end_time , self.duration))
+        b = f'{splitname(self.path)[0]}_{start_time}_{round(min(end_time , self.duration))}.wav'
+        self.newpath = os.path.join(self.parent , b)
+        a.write_audiofile(self.newpath)
+        return audio(self.newpath)
+
 class video(file):
     def __init__(self , video_path) -> None:
         super().__init__(video_path)
@@ -126,24 +135,46 @@ class video(file):
         self.isvideo = True
         try:
             v = cv2.VideoCapture(self.path)
-            probe = ffmpeg.probe(self.path)
-            self.codec = probe['streams'][0]['codec_name']
-            self.bitrate = int(probe['format']['bit_rate']) // 1024
-            self.resolution = int(v.get(cv2.CAP_PROP_FRAME_WIDTH)) , int(v.get(cv2.CAP_PROP_FRAME_HEIGHT))
-            self.fps = v.get(cv2.CAP_PROP_FPS)
-            self.frames = v.get(cv2.CAP_PROP_FRAME_COUNT)
-            self.duration = self.frames/self.fps
-            self.fullinfo = probe
-        except Exception:
-            self.codec = 'Unknown'
-            probe = {}
-            self.bitrate = 0
-            self.resolution = 0 , 0
-            self.fps = 0
-            self.frames = 0
-            self.duration = 0
-            self.fullinfo = probe
+        except Exception as e:
             self.isvideo = False
+            print(e)
+        try:
+            probe = ffmpeg.probe(self.path)
+        except Exception as e:
+            probe = {}
+            print(e)
+        try:
+            self.codec = probe['streams'][0]['codec_name']
+        except Exception as e:
+            self.codec = 'Unknown'
+            print(e)
+        try:
+            self.bitrate = int(probe['format']['bit_rate']) // 1024
+        except Exception as e:
+            self.bitrate = 0
+            print(e)
+        try:
+            self.resolution = int(v.get(cv2.CAP_PROP_FRAME_WIDTH)) , int(v.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        except Exception as e:
+            self.resolution = 0 , 0
+            print(e)
+        try:
+            self.fps = v.get(cv2.CAP_PROP_FPS)
+        except Exception as e:
+            self.fps = 0
+            print(e)
+        try:
+            self.frames = v.get(cv2.CAP_PROP_FRAME_COUNT)
+        except Exception as e:
+            self.frames = 0
+            print(e)
+        try:
+            self.duration = self.frames/self.fps
+        except Exception as e:
+            self.duration = 0
+            print(e)
+            
+        self.fullinfo = probe
         self.audio_path = ''
         self.newpath = ''
 
@@ -166,6 +197,15 @@ class video(file):
         v = a.without_audio()
         self.newpath = os.path.join(self.parent , b)
         v.write_videofile(self.newpath)
+        return video(self.newpath)
+
+    def cut(self , start_time , end_time):
+        if start_time < 0:
+            return
+        a = VideoFileClip(self.path).subclip(start_time , min(end_time , self.duration))
+        b = f'{splitname(self.path)[0]}_{start_time}_{round(min(end_time , self.duration))}.mp4'
+        self.newpath = os.path.join(self.parent , b)
+        a.write_videofile(self.newpath)
         return video(self.newpath)
 
     '''def Bitrate_modification(self , output_path , target_bitrate) -> None:
