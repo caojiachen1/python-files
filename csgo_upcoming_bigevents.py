@@ -41,7 +41,7 @@ x = tkinter.Scrollbar(win, width=22, orient=tkinter.HORIZONTAL)
 x.pack(side=tkinter.BOTTOM, fill=tkinter.X)
 
 listbox = tkinter.Listbox(win, selectmode=tkinter.SINGLE, yscrollcommand=y.set, xscrollcommand=x.set,
-                          listvariable=content, width=100, height=25, justify='right')
+                            listvariable=content, width=100, height=25, justify='right')
 listbox.pack(side=tkinter.BOTTOM, fill=tkinter.Y)
 
 y.config(command=listbox.yview)

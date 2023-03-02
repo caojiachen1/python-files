@@ -1,4 +1,4 @@
-import shutil,cv2,os,ffmpeg,wave,PyPDF2,requests,zipfile,re
+import shutil , cv2 , os , ffmpeg , wave , PyPDF2 , requests , zipfile , re
 from moviepy.editor import *
 from tkinter import filedialog
 import tkinter.messagebox as msgbox
@@ -291,9 +291,16 @@ class pdf(file):
         try:
             pdfreader = PyPDF2.PdfFileReader(self.path)
             self.pages = pdfreader.numPages
+            self.information = pdfreader.documentInfo
         except Exception:
-            self.paget = 0
+            self.pages = 0
             self.ispdf = False
+            self.information = None
+
+    def pdf2pic(self , page , save_path):
+        if page > self.pages or page < 1:
+            return
+        
 
 class html():
     def __init__(self , path) -> None:
