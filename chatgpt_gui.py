@@ -1,20 +1,27 @@
 from tkinter import *
 from tkinter.ttk import *
+import tkinter.messagebox as msgbox
 import openai
+import os
 
 def respond(text):
-    api_key = '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'
-    openai.api_key = api_key
-
-    result = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "user", "content": text}
-        ]
-    )
-    completion_tokens = result['usage']['completion_tokens']
-    promt_tokens = result['usage']['prompt_tokens']
-    respond = result['choices'][0]['message']['content']
+    openai.api_key = os.environ["OPENAI_API_KEY"]
+    try:
+        result = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "user", "content": text}
+            ]
+        )
+        completion_tokens = result['usage']['completion_tokens']
+        promt_tokens = result['usage']['prompt_tokens']
+        respond = result['choices'][0]['message']['content']
+    except openai.error.Timeout:
+        msgbox.showerror('错误' , '网络连接超时!')
+        return 'timeout'
+    except openai.error.AuthenticationError:
+        msgbox.showerror('错误' , 'API-KEY错误!')
+        return 'apikeyerror'
     return respond , promt_tokens , completion_tokens
 
 def scrollbar_autohide(bar,widget):
@@ -35,6 +42,7 @@ class WinGUI(Tk):
         self.tk_input_ = self.__tk_input_()
         self.tk_text_response = self.__tk_text_response()
         self.tk_label_welcome = self.__tk_label_welcome()
+        self.tk_button_change_apikey = self.__tk_button_change_apikey()
         self.tk_input_.bind('<Return>',self.answer)
 
     def __win(self):
@@ -68,16 +76,42 @@ class WinGUI(Tk):
         label.place(x=150, y=10, width=300, height=50)
         return label
     
+    def __tk_button_change_apikey(self):
+        btn = Button(self, text="修改API-KEY",command=self.change_apikey)
+        btn.place(x=50, y=20, width=87, height=30)
+        return btn
+    
     def answer(self,event):
         self.tk_text_response.delete('1.0' , 'end')
         text_in = self.tk_input_.get()
         out = respond(self.tk_input_.get())
+        if out in ['apikeyerror' , 'timeout']:
+            return
         text_out = out[0].replace('\n' , '')
         display_text = f'问:{text_in} ({out[1]} tokens)\n答:{text_out} ({out[2]} tokens)'
         self.tk_text_response.insert('0.0' , display_text)
         self.tk_input_.delete(0 , END)
         with open('D:/chatgpt_history.log' , 'a') as f:
             f.write(display_text + '\n')
+
+    def change_apikey(self):
+        root = Toplevel(self)
+        root.title('修改API-KEY')
+        width = 600
+        height = 25
+        screenwidth = self.winfo_screenwidth()
+        screenheight = self.winfo_screenheight()
+        geometry = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
+        root.geometry(geometry)
+
+        input_apikey = Entry(root)
+        input_apikey.pack(fill=BOTH)
+        def f(event):
+            os.system(f'setx OPENAI_API_KEY {input_apikey.get()}')
+            msgbox.showinfo('提示' , '修改成功!')
+            root.destroy()
+        input_apikey.bind('<Return>' , f)
+        root.mainloop()
         
 win = WinGUI()
 win.mainloop()
