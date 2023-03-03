@@ -23,10 +23,9 @@ class domain():
             for record in self.__client.list_record(zone_name = self.domain).records
         }
 
-    def create_dns(self , type , value):
-        name = '@'
+    def create_dns(self , name , type , value):
         if name in list(self.info_list().keys()):
-            code = self.update_dns(type , value)
+            code = self.update_dns(name , type , value)
             return 1 if code == 1 else 0
         create_record_request = {
             'rr': name,
@@ -35,9 +34,8 @@ class domain():
         }
         self.__client.create_record(zone_name = self.domain , create_record_request = create_record_request)
 
-    def update_dns(self , type , value):
+    def update_dns(self , name , type , value):
         info = self.info_list()
-        name = '@'
         if value == info[name]['value'] and type == info[name]['type']:
             msgbox.showwarning('警告' , '已存在相同记录!')
             return 1
@@ -51,12 +49,20 @@ class domain():
 
 def enter():
     input_domain_name = input_domain.get()
+    split = input_domain_name.split('.')
+    name = '@'
+    if split.__len__() == 3:#需要主机记录值
+        name = split[0]
+        input_domain_name = input_domain_name.split('.' , 1)[1]
+    elif split.__len__() > 3:
+        msgbox.showerror('错误' , '主机记录错误!')
+        return
     d = domain(input_domain_name)
     if input_domain_name not in d.domain_list():
         msgbox.showerror('错误' , '域名不存在!')
         return
     try:
-        code = d.create_dns(rb_type.get() , input_record.get())
+        code = d.create_dns(name , rb_type.get() , input_record.get())
         if code == 1:
             return
         msgbox.showinfo('提示' , '成功!')

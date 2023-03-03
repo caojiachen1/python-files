@@ -1,6 +1,6 @@
 import openai
 
-api_key = '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'
+api_key = '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'
 openai.api_key = api_key
 
 result = openai.ChatCompletion.create(
@@ -11,7 +11,7 @@ result = openai.ChatCompletion.create(
 )
 tokens = result['usage']['total_tokens']
 respond = result['choices'][0]['message']['content']
-print(respond)
+print(respond , tokens)
 
 result = {
     "choices": [

@@ -104,4 +104,4 @@ class domain():
 
 if __name__ == "__main__":
     mine = domain('visitcjc.top')
-    mine.update_dns('@', 'A', '192.168.31.58')
+    mine.update_dns('@', 'A', '100.88.140.122')

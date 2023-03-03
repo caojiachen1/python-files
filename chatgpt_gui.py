@@ -3,7 +3,7 @@ from tkinter.ttk import *
 import openai
 
 def respond(text):
-    api_key = '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'
+    api_key = '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'
     openai.api_key = api_key
 
     result = openai.ChatCompletion.create(
@@ -35,6 +35,7 @@ class WinGUI(Tk):
         self.tk_input_ = self.__tk_input_()
         self.tk_text_response = self.__tk_text_response()
         self.tk_label_welcome = self.__tk_label_welcome()
+        self.tk_input_.bind('<Return>',self.answer)
 
     def __win(self):
         self.title("ChatGPT")
@@ -55,23 +56,18 @@ class WinGUI(Tk):
         text = Text(self, font=10, state=NORMAL)
         text.place(x=50, y=140, width=500, height=300)
         
-        vbar = Scrollbar(self)
-        text.configure(yscrollcommand=vbar.set)
-        vbar.config(command=text.yview)
-        vbar.place(x=535, y=140, width=15, height=300)
-        scrollbar_autohide(vbar,text)
+        # vbar = Scrollbar(self)
+        # text.configure(yscrollcommand=vbar.set)
+        # vbar.config(command=text.yview)
+        # vbar.place(x=535, y=140, width=15, height=300)
+        # scrollbar_autohide(vbar,text)
         return text
 
     def __tk_label_welcome(self):
         label = Label(self,text="欢迎来到ChatGPT的世界",anchor="center",font='Arial 12 bold')
         label.place(x=150, y=10, width=300, height=50)
         return label
-
-class Win(WinGUI):
-    def __init__(self):
-        super().__init__()
-        self.__event_bind()
-
+    
     def answer(self,event):
         self.tk_text_response.delete('1.0' , 'end')
         text_in = self.tk_input_.get()
@@ -82,10 +78,6 @@ class Win(WinGUI):
         self.tk_input_.delete(0 , END)
         with open('D:/chatgpt_history.log' , 'a') as f:
             f.write(display_text + '\n')
-
-    def __event_bind(self):
-        self.tk_input_.bind('<Return>',self.answer)
         
-if __name__ == "__main__":
-    win = Win()
-    win.mainloop()
+win = WinGUI()
+win.mainloop()
