@@ -3,6 +3,7 @@ from tkinter.ttk import *
 import tkinter.messagebox as msgbox
 import openai
 import os
+from subprocess import run
 
 def respond(text):
     try:
@@ -112,8 +113,9 @@ class WinGUI(Tk):
         input_apikey = Entry(root)
         input_apikey.pack(fill=BOTH)
         def f(event):
-            os.system(f'setx OPENAI_API_KEY {input_apikey.get()}')
-            msgbox.showinfo('提示' , '修改成功!')
+            if input_apikey.get() != '':
+                run(f'setx OPENAI_API_KEY {input_apikey.get()}' , shell = True)
+                msgbox.showinfo('提示' , '修改成功!请重启程序使其生效')
             root.destroy()
         input_apikey.bind('<Return>' , f)
         root.mainloop()
