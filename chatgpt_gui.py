@@ -5,7 +5,12 @@ import openai
 import os
 
 def respond(text):
-    openai.api_key = os.environ["OPENAI_API_KEY"]
+    try:
+        api_key = os.environ["OPENAI_API_KEY"]
+    except KeyError:
+        msgbox.showerror('错误' , '请输入API KEY!')
+        return 'noapikey'
+    openai.api_key = api_key
     try:
         result = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -20,7 +25,7 @@ def respond(text):
         msgbox.showerror('错误' , '网络连接超时!')
         return 'timeout'
     except openai.error.AuthenticationError:
-        msgbox.showerror('错误' , 'API-KEY错误!')
+        msgbox.showerror('错误' , 'API KEY错误!')
         return 'apikeyerror'
     return respond , promt_tokens , completion_tokens
 
@@ -77,7 +82,7 @@ class WinGUI(Tk):
         return label
     
     def __tk_button_change_apikey(self):
-        btn = Button(self, text="修改API-KEY",command=self.change_apikey)
+        btn = Button(self, text="修改API KEY",command=self.change_apikey)
         btn.place(x=50, y=20, width=87, height=30)
         return btn
     
@@ -85,7 +90,7 @@ class WinGUI(Tk):
         self.tk_text_response.delete('1.0' , 'end')
         text_in = self.tk_input_.get()
         out = respond(self.tk_input_.get())
-        if out in ['apikeyerror' , 'timeout']:
+        if out in ['apikeyerror' , 'timeout' , 'noapikey']:
             return
         text_out = out[0].replace('\n' , '')
         display_text = f'问:{text_in} ({out[1]} tokens)\n答:{text_out} ({out[2]} tokens)'
@@ -96,7 +101,7 @@ class WinGUI(Tk):
 
     def change_apikey(self):
         root = Toplevel(self)
-        root.title('修改API-KEY')
+        root.title('修改API KEY')
         width = 600
         height = 25
         screenwidth = self.winfo_screenwidth()
