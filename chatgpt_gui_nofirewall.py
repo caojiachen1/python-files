@@ -2,11 +2,15 @@ import tkinter as tk
 from tkinter.ttk import *
 import tkinter.font as tf
 import tkinter.messagebox as msgbox
-import openai , os , requests , re
+import openai , os , requests , re , json , contextlib , hashlib
 import openai.error
 from hashlib import md5
 from subprocess import run
 from base64 import b64decode
+
+appid = '20230223001572583'
+key = 'LbGJ114ECr7RhvK5dS5J'
+salt = '1435660288'
 
 ask_sequences = []
 sequence_length = 0 #就是历史列表的总长度
@@ -16,16 +20,35 @@ current_font = 'Arial'
 fontsize = 10
 bold_reflection = ['normal' , 'bold']
 
+def language_detect(text):
+    if text == '':
+        return ''
+    sign = hashlib.md5(f'{appid}{text}{salt}{key}'.encode('utf-8')).hexdigest()
+    url = 'https://fanyi-api.baidu.com/api/trans/vip/language'
+    url += f'?q={text}&salt={salt}&sign={sign}&appid={appid}'
+    try:
+        detect_result = requests.get(url).json()
+        return detect_result['data']['src']
+    except Exception as e:
+        print(e)
+        return detect_result
+
 def translate(text , from_language = 'auto' , to_language = 'zh'):
     if text == '':
         return ''
-    appid = '20230223001572583'
-    key = 'LbGJ114ECr7RhvK5dS5J'
-    salt = '1435660288'
+    if language_detect(text) == 'zh':
+        return text
+    text = text.replace('\n' , '')
+    text = re.sub(r'(```.*?```)' , '******' , text)
     sign = md5(f'{appid}{text}{salt}{key}'.encode('utf-8')).hexdigest()
     url = 'http://api.fanyi.baidu.com/api/trans/vip/translate'
     url += f'?q={text}&from={from_language}&to={to_language}&appid={appid}&salt={salt}&sign={sign}'
-    return requests.get(url).json()['trans_result'][0]['dst']
+    try:
+        translate_result = requests.get(url).json()
+        return translate_result['trans_result'][0]['dst']
+    except Exception as e:
+        print(e)
+        return translate_result
 
 def check_billing():
     try:
@@ -56,17 +79,24 @@ def respond(text):
         }
         data = {
             'model' : 'gpt-3.5-turbo',
-            'messages' : [{'role' : 'user' , 'content' : text}]
+            'messages' : [{'role' : 'user' , 'content' : text}],
+            'stream' : True
         }
-        result = requests.post('https://chatgpt-api.shn.hk/v1/' , headers = header , json = data).json()
-        try:
-            error = result['error']
-            msgbox.showerror('错误' , error)
-            return 'error'
-        except KeyError:
-            prompt_tokens = result['usage']['prompt_tokens']
-            completion_tokens = result['usage']['completion_tokens']
-            respond = result['choices'][0]['message']['content']
+        tk_text_response.insert('0.0' , f'问:{tk_input_.get()}\n\n答:')
+        tk_text_response.update()
+        result = requests.post('https://chatgpt-api.shn.hk/v1/' , headers = header , json = data , stream = True)
+        full_respond = ''
+        for line in result.iter_lines():
+            if line != b'':
+                a = line.decode('utf-8').split(':' , 1)[1].strip()
+                with contextlib.suppress(Exception):
+                    a = json.loads(a)
+                    respond = a['choices'][0]['delta']['content']
+                    if respond != '\n\n':
+                        full_respond += respond
+                        tk_text_response.insert('end' , respond)
+                        tk_text_response.update()
+                        tk_text_response.yview_moveto(1.0)
     except requests.exceptions.ConnectTimeout:
         msgbox.showerror('错误' , '网络连接超时!')
         return 'timeout'
@@ -79,7 +109,7 @@ def respond(text):
     except requests.exceptions.ConnectionError:
         msgbox.showerror('错误' , '连接错误!')
         return 'apiconnectionerror'
-    return respond , prompt_tokens , completion_tokens
+    return full_respond
 
 current = sequence_length
 display_text = ''
@@ -87,7 +117,7 @@ mytext = ''
 response_text = ''
 
 def response_translate():
-    if mytext == '':
+    if language_detect(mytext) == 'zh' and language_detect(response_text) == 'zh' or mytext == '':
         return
     tk_text_response.delete('1.0' , tk.END)
     tk_text_response.insert('0.0' , f'问:{translate(mytext)} \n\n答:{translate(response_text)}')
@@ -104,23 +134,16 @@ def answer(event):
     text_in = tk_input_.get()
     if text_in == '':
         return
-    out = respond(tk_input_.get())
+    out = respond(text_in)
     # out = ['fuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuck' , 0 , 0]
     if out in error_list:
         return
     ask_sequences.append(text_in)
     sequence_length += 1
     current = sequence_length
-    text_out = out[0].replace('\n' , '')
-    text_out = text_out.replace('```' , '\n```\n')
-    text_out = text_out.replace('#' , '\n#')
-    orders = re.findall(r'([0-9]+[.])' , text_out)
-    for i in orders:
-        text_out = text_out.replace(i , f'\n{i} ')
     mytext = text_in
-    response_text = text_out
-    display_text = f'问:{text_in} ({out[1]} tokens)\n\n答:{text_out} ({out[2]} tokens)'
-    tk_text_response.insert('0.0' , display_text)
+    response_text = out
+    display_text = f'问:{text_in}\n\n答:{out}'
     tk_input_.delete(0 , tk.END)
     with open('D:/chatgpt_history.log' , 'a') as f:
         f.write(display_text + '\n\n')
@@ -226,7 +249,7 @@ def setting():
     setting_panel.geometry(geometry)
     setting_panel.focus_set()
 
-    check_bill = Button(setting_panel , text = '查询余额')
+    bill = Label(setting_panel , )
 
     select_font = Combobox(setting_panel , state = 'readonly')
     select_font['values'] = tf.families()
