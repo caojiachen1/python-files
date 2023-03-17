@@ -10,19 +10,11 @@ from base64 import b64decode
 
 ask_sequences = []
 sequence_length = 0 #就是历史列表的总长度
-error_list = ['apikeyerror' , 'timeout' , 'noapikey' , 'ratelimit' , 'none' , 'apiconnectionerror']
-model = 'gpt-3.5-turbo'
+error_list = ['apikeyerror' , 'timeout' , 'noapikey' , 'ratelimit' , 'none' , 'apiconnectionerror' , 'error']
 spacing = 10
 current_font = 'Arial'
 fontsize = 10
 bold_reflection = ['normal' , 'bold']
-
-def get_all_models(apikey):
-    headers = {
-        'Authorization' : f'Bearer {apikey}'
-    }
-    get = requests.get(r'https://api.openai.com/v1/models' , headers = headers).json()['data']
-    return [model['id'] for model in get]
 
 def translate(text , from_language = 'auto' , to_language = 'zh'):
     if text == '':
@@ -35,6 +27,20 @@ def translate(text , from_language = 'auto' , to_language = 'zh'):
     url += f'?q={text}&from={from_language}&to={to_language}&appid={appid}&salt={salt}&sign={sign}'
     return requests.get(url).json()['trans_result'][0]['dst']
 
+def check_billing():
+    try:
+        api_key = os.environ['OPENAI_API_KEY']
+        header = {
+            'Authorization' : f'Bearer {api_key}'
+        }
+        a = requests.get('https://visitcjc.top/dashboard/billing/credit_grants' , headers = header).json()
+        total_granted = a['total_granted']
+        total_used = a['total_used']
+        total_available = a['total_available']
+    except Exception:
+        return 0 , 0 , 0
+    return total_granted , total_used , total_available
+
 def respond(text):
     if text == '':
         return 'none'
@@ -43,43 +49,37 @@ def respond(text):
     except KeyError:
         msgbox.showerror('错误' , '请输入API KEY!')
         return 'noapikey'
-    openai.api_key = api_key
     try:
-        if model == 'gpt-3.5-turbo':
-            result = openai.ChatCompletion.create(
-                model='gpt-3.5-turbo',
-                messages=[
-                    {'role': 'user', 'content': text}
-                ]
-            )
+        header = {
+            'Authorization' : f'Bearer {api_key}',
+            'Content-Type' : 'application/json'
+        }
+        data = {
+            'model' : 'gpt-3.5-turbo',
+            'messages' : [{'role' : 'user' , 'content' : text}]
+        }
+        result = requests.post('https://chatgpt-api.shn.hk/v1/' , headers = header , json = data).json()
+        try:
+            error = result['error']
+            msgbox.showerror('错误' , error)
+            return 'error'
+        except KeyError:
+            prompt_tokens = result['usage']['prompt_tokens']
+            completion_tokens = result['usage']['completion_tokens']
             respond = result['choices'][0]['message']['content']
-        else:
-            result = openai.Completion.create(
-                model = model,
-                prompt = text,
-                temperature = 0,
-                top_p = 1,
-                frequency_penalty = 0.0,
-                presence_penalty = 0.0,
-                stop = None,
-                max_tokens = 1024
-            )
-            respond = result['choices'][0]['text']
-        completion_tokens = result['usage']['completion_tokens']
-        promt_tokens = result['usage']['prompt_tokens']
-    except openai.error.Timeout:
+    except requests.exceptions.ConnectTimeout:
         msgbox.showerror('错误' , '网络连接超时!')
         return 'timeout'
-    except openai.error.AuthenticationError:
+    except requests.exceptions.JSONDecodeError:
         msgbox.showerror('错误' , 'API KEY错误!')
         return 'apikeyerror'
     except openai.error.RateLimitError:
         msgbox.showerror('错误' , '请求频率过高!')
         return 'ratelimit'
-    except openai.error.APIConnectionError:
+    except requests.exceptions.ConnectionError:
         msgbox.showerror('错误' , '连接错误!')
         return 'apiconnectionerror'
-    return respond , promt_tokens , completion_tokens
+    return respond , prompt_tokens , completion_tokens
 
 current = sequence_length
 display_text = ''
@@ -226,20 +226,12 @@ def setting():
     setting_panel.geometry(geometry)
     setting_panel.focus_set()
 
-    model_tuple = ('gpt-3.5-turbo','text-davinci-001','text-davinci-002','text-davinci-003','text-ada-001','text-curie-001','text-babbage-001')
-
-    select_model = Combobox(setting_panel , state='readonly')
-    select_model['values'] = model_tuple
-    select_model.set(model)
-    select_model.place(x = 70 , y = 30 , width = 150 , height = 24)
+    check_bill = Button(setting_panel , text = '查询余额')
 
     select_font = Combobox(setting_panel , state = 'readonly')
     select_font['values'] = tf.families()
     select_font.set(current_font)
     select_font.place(x = 70 , y = 70 , width = 150 , height = 24)
-
-    _model = Label(setting_panel,text='模型',anchor='center')
-    _model.place(x = 10 , y = 30 , width = 50, height = 25)
 
     _font = Label(setting_panel,text = '字体',anchor = 'center')
     _font.place(x = 10 , y = 70 , width = 50, height = 25)
@@ -262,8 +254,7 @@ def setting():
     font_bold.place(x = 22 , y = 190)
 
     def onexit():
-        global model , current_font , fontsize , spacing
-        model = select_model.get()
+        global current_font , fontsize , spacing
         current_font = select_font.get()
         fontsize = font_size.get()
         spacing = spacing_size.get()
