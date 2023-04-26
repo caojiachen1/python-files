@@ -1,20 +1,18 @@
 from __future__ import print_function
-import string
-import pywifi
+import string , pywifi , sys , ctypes , time , datetime , psutil , platform , wmi
 from pywifi import const
-import sys,ctypes,time
 from bluetooth import *
 from bluetooth.windows import discover_devices
-import datetime
+#pip install comtypes wmi psutil pywifi pybluez2 pypiwin32
 # from winrt.windows.devices import radios
 
-def get_admin():
-    def is_admin():
-        try:
-            return ctypes.windll.shell32.IsUserAnAdmin()
-        except Exception:
-            return False
+def is_admin():
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except Exception:
+        return False
 
+def get_admin():
     if not is_admin():
         ctypes.windll.shell32.ShellExecuteW(None , "runas" , sys.executable , __file__ , None , 1)
 
@@ -22,9 +20,9 @@ class wifi():
     def __init__(self) -> None:
         global w,wireless,wifi_status,constlist
         constlist = ['DISCONNECTED' , 'SCANNING' , 'INACTIVE' , 'CONNECTING' , 'CONNECTED']
-        self._update()
+        self.__update()
     
-    def _update(self):
+    def __update(self):
         global w,wireless,wifi_status
         w = pywifi.PyWiFi()
         wireless = w.interfaces()[0]
@@ -32,7 +30,7 @@ class wifi():
         self.status = constlist[wifi_status]
 
     def connect(self , ssid , password):
-        self._update()
+        self.__update()
         if self.status == 'DISCONNECTED':
             wifi_file = pywifi.Profile()
             wifi_file.ssid = ssid
@@ -45,14 +43,14 @@ class wifi():
             wireless.connect(tep_profile)
             time.sleep(3)
             if wireless.status() == const.IFACE_CONNECTED:
-                self._update()
+                self.__update()
                 return True
             else:
-                self._update()
+                self.__update()
                 return False
         else:
             print("Already WiFi Access")
-        self._update()
+        self.__update()
 
     def disconnect(self):
         if self.status == 'CONNECTED':
@@ -60,7 +58,7 @@ class wifi():
             wireless = w.interfaces()[0]
             wireless.disconnect()
             time.sleep(2)
-            self._update()
+            self.__update()
 
     def scan(self):
         wireless.scan()
@@ -114,12 +112,12 @@ class bluetooth():
         except Exception:
             return None
         return addr
- 
+
     def find(self, target_name : string):
         self.scan()
         self.found = target_name in self.devices_nearby.keys()
         return self.found
- 
+
     def connect(self , target_name , target_address) -> bool:
         self.find(target_name)
         if not self.found:
@@ -140,4 +138,24 @@ class bluetooth():
         self.connected = True
         return self.connected
 
-        
+class hardware():
+    def __init__(self):
+        cpuinfo = wmi.WMI()
+        cpu = cpuinfo.Win32_Processor()[0]
+        self.cpu_name = cpu.Name
+        self.processor = platform.processor()
+        self.cpu_core_num = psutil.cpu_count()
+        self.frequency = psutil.cpu_freq()
+        self.cpu_percent = cpu.LoadPercentage
+        self.free_memory = psutil.virtual_memory().free / 1024 ** 3
+        self.total_memory = psutil.virtual_memory().total / 1024 ** 3
+        self.memory_percent = psutil.virtual_memory().percent
+        self.system = platform.system()
+        self.platform = platform.platform()
+        self.system_version = platform.version()
+        self.cpu_producer = platform.machine()
+        self.pc_name = platform.node()
+        self.info = platform.uname()
+        self.system_bit = platform.architecture()[0]
+        self.processorid = cpu.ProcessorId.strip()
+        self.max_frequency = cpu.MaxClockSpeed
